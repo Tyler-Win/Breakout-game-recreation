@@ -77,6 +77,7 @@ int main(void) {
   ST7735S_init();
 
   // ADC0 and ADC1
+  // Hello this is a
   
   // Buzzer
   //motor0_init();

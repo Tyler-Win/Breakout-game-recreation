@@ -58,6 +58,7 @@ bool boost_pb_up(uint8_t pb_idx);
 void enable_joystick_and_tilt(void);
 void accelerometer_tilt(void);
 void input_microphone(void);
-
+uint8_t joystick_x();
+uint8_t joystick_y();
 
 #endif // __BOOSTER_H__

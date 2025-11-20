@@ -136,4 +136,6 @@ color565_t RGB_to_color(uint8_t r, uint8_t g, uint8_t b);
 
 void draw_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, color565_t color);
 
+void ST7735S_clear_lcd(color565_t reset_color);
+
 #endif /* __SPI_H__ */

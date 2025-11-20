@@ -186,3 +186,16 @@ color565_t RGB_to_color(uint8_t r, uint8_t g, uint8_t b)
                        .b = ((float)b / (float)UINT8_MAX) * UINT5_MAX};
 
 }
+
+void ST7735S_clear_lcd(color565_t reset_color)
+{
+  ST7735S_set_addr(0, 0, LCD_WIDTH, LCD_HEIGHT);
+  ST7735S_write_command(LCD_RAMWR_CMD);
+
+  for (uint32_t i = 0; i < (LCD_WIDTH * LCD_HEIGHT); i++)
+  {
+    ST7735S_write_color(reset_color);    
+  }
+}
+
+
