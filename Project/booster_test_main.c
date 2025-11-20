@@ -77,7 +77,6 @@ int main(void) {
   ST7735S_init();
 
   // ADC0 and ADC1
-  enable_joystick_and_tilt();
   
   // Buzzer
   //motor0_init();
