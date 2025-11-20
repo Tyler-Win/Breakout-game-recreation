@@ -38,13 +38,13 @@
 #include "booster.h"
 #include "adc.h"
 #include "pitches.h"
-#include "ST7735S.h"
 #include "gfx.h"
 
 //-----------------------------------------------------------------------------
 // Define function prototypes used by the program
 //-----------------------------------------------------------------------------
-
+void run_lcd();
+uint8_t filter_adc_val(uint8_t raw_val);
 
 //-----------------------------------------------------------------------------
 // Define symbolic constants used by the program
@@ -74,22 +74,18 @@ int main(void) {
   clock_init_40mhz();
   launchpad_gpio_init();
   UART_init(115200);
-  ST7735S_init();
 
   // ADC0 and ADC1
-  // Hello this is a
-  
-  // Buzzer
-  //motor0_init();
-  //buzzer_init();
-  //motor0_pwm_enable();
+  enable_joystick_and_tilt();
 
   // Push Buttons
   boost_pb_init();
 
   // RGBS
-  //init_booster_leds();
-  //enable_rgb_timers();
+  init_booster_leds();
+  enable_rgb_timers();
+
+  ST7735S_init();
 
   // Uncomment song name to test with RGBs
   //potter();
@@ -99,26 +95,35 @@ int main(void) {
   // Endless loop to prevent program from ending
 
   while (1) {
-    uint16_t xPos = 50;
-    uint16_t yPox = 50;
-    bool terminate = 1;
-    color565_t red = RGB_to_color(255, 0, 0);
-    draw_rectangle(50, 50, 50, 50, red);
-
-
-
+    run_lcd();
   }
 }
 /* main */
 
-void movingRectangle(){
-  uint16_t xPos = 50;
-  uint16_t yPos = 50;
-  bool terminate = false;
+void run_lcd()
+{
+  static uint8_t x_val;
+  static uint8_t y_val;
+  uint8_t x_start = 50;
+  uint8_t y_start = 50;
 
-  while (!terminate){
-    
+  color565_t reset_color = RGB_to_color(255, 255, 255);
+  color565_t red = RGB_to_color(254, 0, 0);
+
+  while (1) 
+  {
+    x_val = filter_adc_val(joystick_x());
+    color565_t yellow = RGB_to_color(254, 254, 0);
+    draw_rectangle(x_val, 40, 50, 50, red); 
+    msec_delay(1);
+    ST7735S_clear_lcd(reset_color);
   }
+    
+}
 
-
+uint8_t filter_adc_val(uint8_t raw_val)
+{
+  uint8_t filter_val = 0;
+  filter_val = raw_val / 4;
+  return filter_val;       
 }
