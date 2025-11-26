@@ -1,14 +1,59 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Project",
-      "type": "ccs-debug",
-      "request": "launch",
-      "projectInfo": {
-        "name": "Project",
-        "resourceId": "/Project"
-      }
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Project",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project"
+            }
+        },
+        {
+            "name": "Project (1)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/booster_test_main.c"
+            }
+        },
+        {
+            "name": "Project (2)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/previous_project_main.c"
+            }
+        },
+        {
+            "name": "Project (3)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/booster.h"
+            }
+        },
+        {
+            "name": "Project (4)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/booster.c"
+            }
+        },
+        {
+            "name": "Project (5)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/clock.c"
+            }
+        }
+    ]
 }
