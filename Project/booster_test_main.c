@@ -24,6 +24,7 @@
 // Loads standard C include files
 //-----------------------------------------------------------------------------
 #include <stdio.h>
+#include <stdlib.h>
 
 //-----------------------------------------------------------------------------
 // Loads MSP launchpad board support macros and definitions
@@ -53,8 +54,10 @@ uint8_t filter_adc_val(uint8_t raw_val);
 // Define symbolic constants used by the program
 //-----------------------------------------------------------------------------
 
-#define HIGH__JOYSTICK_VALUE                                  2500
-#define LOW_JOYSTICK_VALUE                                    1500
+#define FAR_RIGHT_JOYSTICK_VALUE                              2900
+#define RIGHT_JOYSTICK_VALUE                                  2100
+#define LEFT_JOYSTICK_VALUE                                   1500
+#define FAR_LEFT_JOYSTICK_VALUE                               1000
 #define HIGH_COLOR_TONE                                       100
 #define LOW_COLOR_TONE                                        50
 #define BRIGHTNESS                                            50
@@ -66,11 +69,16 @@ uint8_t filter_adc_val(uint8_t raw_val);
 #define NO_COLOR_TONE                                         0
 #define DEADZONE                                              4
 
+#define SCREEN_WIDTH 128
+#define PADDLE_WIDTH 40
+
+#define JOY_MIN 0
+#define JOY_MAX 250
+
 //-----------------------------------------------------------------------------
 // Define global variables and structures here.
 // NOTE: when possible avoid using global variables
 //-----------------------------------------------------------------------------
-
 
 
 int main(void) {
@@ -89,6 +97,8 @@ int main(void) {
   enable_rgb_timers();
 
   ST7735S_init();
+  ST7735S_clear_lcd(RGB_to_color(255, 255, 255));
+
 
   // Uncomment song name to test with RGBs
   //potter();
@@ -106,62 +116,66 @@ int main(void) {
 void run_breakout()
 {
   paddle_object();
+  msec_delay(8);
 }
 
-void pushbutton_test()
-{
-    buzzer_pwm_disable();
-
-
-    if (boost_pb_down(PB_2)){
-        rgb_dc(NO_COLOR_TONE, HIGH_COLOR_TONE, NO_COLOR_TONE);
-    }
-    
-    if (boost_pb_up(PB_2)){
-        rgb_dc(NO_COLOR_TONE, NO_COLOR_TONE, HIGH_COLOR_TONE);
-    }
-}
-
+// Creates a paddle that can be manipulated using
+// the joystic
 void paddle_object()
 {
-  static uint8_t x_old = 50;
-  uint8_t x_new;
-  uint8_t y_pos = 40;
-  uint8_t paddle_width = 50;
-  uint8_t paddle_height = 30;
+    static int x_pos = 40;               // initial paddle position
+    static int x_old = 0;                // old value that gets compared
+    int y_pos = 110;                     // y-value for the platform
+    int paddle_height = 8;               // height of paddle
+    int fast_paddle_speed = 2;           // pixels per frame
+    int slow_paddle_speed = 1;           // pixels per frame
 
-  color565_t bg_color = RGB_to_color(255, 255, 255);
-  color565_t paddle_color = RGB_to_color(254, 0, 0);
-  color565_t object = RGB_to_color(0, 0, 255);
+    int joy_x = ADC0_in(X_AXIS);    // read X-axis joystick
 
-  draw_rectangle(x_old, y_pos, paddle_width, paddle_height, bg_color);
-  draw_rectangle(30, 30, 50, 50, object);
-
-  while (1) 
-  {
-    x_new = filter_adc_val(joystick_x());
-    x_new = (x_new * (320 - paddle_width)) / 255;
-
-    int delta = x_new - x_old;
-
-    if (delta > DEADZONE || delta < -DEADZONE)
-    {
-
-      draw_rectangle(x_old, y_pos, paddle_width, paddle_height, bg_color);
-
-      draw_rectangle(x_new, y_pos, paddle_width, paddle_height, paddle_color);
-
-      x_old = x_new;
+    // Move right quickly if joystick pushed far
+    if (joy_x > FAR_RIGHT_JOYSTICK_VALUE) {
+        x_pos += fast_paddle_speed;
+    }
+    // Move right slowly if pushed lightly
+    else if (joy_x > RIGHT_JOYSTICK_VALUE) {
+        x_pos += slow_paddle_speed;
+    }
+    // Move left slowly if joystick pushed lightly
+    else if (joy_x < FAR_LEFT_JOYSTICK_VALUE){
+      x_pos -= fast_paddle_speed;
+    }
+    // Move left quickly if joystick pushed far
+    else if (joy_x < LEFT_JOYSTICK_VALUE){
+      x_pos -= slow_paddle_speed;
+    }
+    // If in the middle, do nothing (neutral)
+    else {
+        // x_pos stays the same
     }
 
-    msec_delay(5);
-  }
+    // Clamps paddle to screen boundaries
+    if (x_pos < 0){
+      x_pos = 0;
+    }
+
+    // Ensures the right end of paddle hits right 
+    // end of paddle screen
+    if (x_pos > SCREEN_WIDTH - PADDLE_WIDTH){
+      x_pos = SCREEN_WIDTH - PADDLE_WIDTH;
+    }
+
+    // Only redraw if position changed
+    if (x_pos != x_old)
+    {
+        // erase old
+        draw_rectangle(x_old, y_pos, PADDLE_WIDTH, paddle_height, 
+                      RGB_to_color(255, 255, 255));
+
+        // draw new
+        draw_rectangle(x_pos, y_pos, PADDLE_WIDTH, paddle_height, 
+                      RGB_to_color(255, 0, 0));   
+        x_old = x_pos;
+    }
 }
 
-uint8_t filter_adc_val(uint8_t raw_val)
-{
-  uint8_t filter_val = 0;
-  filter_val = raw_val / 4;
-  return filter_val;       
-}
 

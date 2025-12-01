@@ -54,6 +54,24 @@
                 "name": "Project",
                 "resourceId": "/Project/clock.c"
             }
+        },
+        {
+            "name": "Project (6)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/uart.c"
+            }
+        },
+        {
+            "name": "Project (7)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/ticlang/startup_mspm0g3507_ticlang.c"
+            }
         }
     ]
 }
