@@ -72,6 +72,15 @@
                 "name": "Project",
                 "resourceId": "/Project/ticlang/startup_mspm0g3507_ticlang.c"
             }
+        },
+        {
+            "name": "Project (8)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/gfx.c"
+            }
         }
     ]
 }

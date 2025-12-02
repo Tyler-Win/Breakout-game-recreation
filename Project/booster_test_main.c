@@ -54,10 +54,10 @@ uint8_t filter_adc_val(uint8_t raw_val);
 // Define symbolic constants used by the program
 //-----------------------------------------------------------------------------
 
-#define FAR_RIGHT_JOYSTICK_VALUE                              2900
-#define RIGHT_JOYSTICK_VALUE                                  2100
-#define LEFT_JOYSTICK_VALUE                                   1500
-#define FAR_LEFT_JOYSTICK_VALUE                               1000
+#define FAR_RIGHT_JOYSTICK_VALUE                              2800
+#define RIGHT_JOYSTICK_VALUE                                  2050
+#define LEFT_JOYSTICK_VALUE                                   1700
+#define FAR_LEFT_JOYSTICK_VALUE                               1100
 #define HIGH_COLOR_TONE                                       100
 #define LOW_COLOR_TONE                                        50
 #define BRIGHTNESS                                            50
@@ -100,6 +100,7 @@ int main(void) {
   ST7735S_clear_lcd(RGB_to_color(255, 255, 255));
 
 
+
   // Uncomment song name to test with RGBs
   //potter();
   // smallworld();
@@ -115,7 +116,8 @@ int main(void) {
 
 void run_breakout()
 {
-  paddle_object();
+  //paddle_object();
+  circleBres(50, 50, 100);
   msec_delay(8);
 }
 
@@ -124,13 +126,15 @@ void run_breakout()
 void paddle_object()
 {
     static int x_pos = 40;               // initial paddle position
-    static int x_old = 0;                // old value that gets compared
+    static int x_old = 40;                // old value that gets compared
+
     int y_pos = 110;                     // y-value for the platform
     int paddle_height = 8;               // height of paddle
     int fast_paddle_speed = 2;           // pixels per frame
     int slow_paddle_speed = 1;           // pixels per frame
 
     int joy_x = ADC0_in(X_AXIS);    // read X-axis joystick
+
 
     // Move right quickly if joystick pushed far
     if (joy_x > FAR_RIGHT_JOYSTICK_VALUE) {
@@ -160,22 +164,49 @@ void paddle_object()
 
     // Ensures the right end of paddle hits right 
     // end of paddle screen
-    if (x_pos > SCREEN_WIDTH - PADDLE_WIDTH){
-      x_pos = SCREEN_WIDTH - PADDLE_WIDTH;
+    if (x_pos > SCREEN_WIDTH - 45){
+      x_pos = SCREEN_WIDTH - 45;
+    }
+
+    // Prints out first rectangle
+    if (x_old == x_pos){
+      static int first_draw_done = 0;
+      if (!first_draw_done) {
+        draw_rectangle(x_pos, y_pos, PADDLE_WIDTH, paddle_height, 
+                       RGB_to_color(255, 0, 0));
+        first_draw_done = 1;               
+      }
     }
 
     // Only redraw if position changed
     if (x_pos != x_old)
     {
-        // erase old
-        draw_rectangle(x_old, y_pos, PADDLE_WIDTH, paddle_height, 
-                      RGB_to_color(255, 255, 255));
+        // Shift right
+        if (x_pos > x_old){
 
-        // draw new
-        draw_rectangle(x_pos, y_pos, PADDLE_WIDTH, paddle_height, 
-                      RGB_to_color(255, 0, 0));   
+          // erase left column
+          draw_rectangle(x_old, y_pos, paddle_height, PADDLE_WIDTH,
+                        RGB_to_color(255, 255, 255));
+
+          // draw right column  
+          draw_rectangle(x_old + PADDLE_WIDTH - 1, y_pos, paddle_height, PADDLE_WIDTH, 
+              RGB_to_color(255, 0, 0));              
+        }
+        else // Shift left
+        {
+
+          // erase right column
+          draw_rectangle(x_old + PADDLE_WIDTH - 1, y_pos, paddle_height, PADDLE_WIDTH,
+                        RGB_to_color(255, 255, 255));
+
+          // draw left column  
+          draw_rectangle(x_pos, y_pos, paddle_height, PADDLE_WIDTH,
+              RGB_to_color(255, 0, 0));  
+        }
+
         x_old = x_pos;
     }
 }
+
 
 
