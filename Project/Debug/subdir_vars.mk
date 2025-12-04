@@ -13,7 +13,7 @@ C_SRCS += \
 ../ST7735S.c \
 ../adc.c \
 ../booster.c \
-../booster_test_main.c \
+../breakout_game.c \
 ../clock.c \
 ../gfx.c \
 ../lcd1602.c \
@@ -29,7 +29,7 @@ C_DEPS += \
 ./ST7735S.d \
 ./adc.d \
 ./booster.d \
-./booster_test_main.d \
+./breakout_game.d \
 ./clock.d \
 ./gfx.d \
 ./lcd1602.d \
@@ -45,7 +45,7 @@ OBJS += \
 ./ST7735S.o \
 ./adc.o \
 ./booster.o \
-./booster_test_main.o \
+./breakout_game.o \
 ./clock.o \
 ./gfx.o \
 ./lcd1602.o \
@@ -61,7 +61,7 @@ OBJS__QUOTED += \
 "ST7735S.o" \
 "adc.o" \
 "booster.o" \
-"booster_test_main.o" \
+"breakout_game.o" \
 "clock.o" \
 "gfx.o" \
 "lcd1602.o" \
@@ -77,7 +77,7 @@ C_DEPS__QUOTED += \
 "ST7735S.d" \
 "adc.d" \
 "booster.d" \
-"booster_test_main.d" \
+"breakout_game.d" \
 "clock.d" \
 "gfx.d" \
 "lcd1602.d" \
@@ -93,7 +93,7 @@ C_SRCS__QUOTED += \
 "../ST7735S.c" \
 "../adc.c" \
 "../booster.c" \
-"../booster_test_main.c" \
+"../breakout_game.c" \
 "../clock.c" \
 "../gfx.c" \
 "../lcd1602.c" \
