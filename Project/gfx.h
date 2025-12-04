@@ -29,8 +29,6 @@
 void draw_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, 
                       color565_t color);
 
-void draw_circle (uint8_t center_x, uint8_t center_y, uint8_t x, uint8_t y);
-
-void circleBres(int xc, int yc, int r);
+void draw_circle(uint8_t cx, uint8_t cy, uint8_t radius, color565_t color);
 
 #endif /* __SPI_H__ */

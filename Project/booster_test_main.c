@@ -46,6 +46,7 @@
 //-----------------------------------------------------------------------------
 void run_breakout();
 void paddle_object();
+void ball_object();
 
 void pushbutton_test();
 uint8_t filter_adc_val(uint8_t raw_val);
@@ -70,7 +71,12 @@ uint8_t filter_adc_val(uint8_t raw_val);
 #define DEADZONE                                              4
 
 #define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 128
 #define PADDLE_WIDTH 40
+#define PADDLE_HEIGHT 8
+
+#define BALL_SPAWN_X (SCREEN_WIDTH / 2)
+#define BALL_SPAWN_Y (110 - 6)
 
 #define JOY_MIN 0
 #define JOY_MAX 250
@@ -116,8 +122,8 @@ int main(void) {
 
 void run_breakout()
 {
-  //paddle_object();
-  circleBres(50, 50, 100);
+  paddle_object();
+  ball_object();
   msec_delay(8);
 }
 
@@ -125,16 +131,14 @@ void run_breakout()
 // the joystic
 void paddle_object()
 {
-    static int x_pos = 40;               // initial paddle position
-    static int x_old = 40;                // old value that gets compared
+    static int16_t x_pos = 40;               // initial paddle position
+    static int16_t x_old = 40;                // old value that gets compared
 
-    int y_pos = 110;                     // y-value for the platform
-    int paddle_height = 8;               // height of paddle
-    int fast_paddle_speed = 2;           // pixels per frame
-    int slow_paddle_speed = 1;           // pixels per frame
+    int16_t y_pos = 110;                     // y-value for the platform
+    int16_t fast_paddle_speed = 2;           // pixels per frame
+    int16_t slow_paddle_speed = 1;           // pixels per frame
 
-    int joy_x = ADC0_in(X_AXIS);    // read X-axis joystick
-
+    int16_t joy_x = ADC0_in(X_AXIS);    // read X-axis joystick
 
     // Move right quickly if joystick pushed far
     if (joy_x > FAR_RIGHT_JOYSTICK_VALUE) {
@@ -172,7 +176,7 @@ void paddle_object()
     if (x_old == x_pos){
       static int first_draw_done = 0;
       if (!first_draw_done) {
-        draw_rectangle(x_pos, y_pos, PADDLE_WIDTH, paddle_height, 
+        draw_rectangle(x_pos, y_pos, PADDLE_WIDTH, PADDLE_HEIGHT, 
                        RGB_to_color(255, 0, 0));
         first_draw_done = 1;               
       }
@@ -185,28 +189,88 @@ void paddle_object()
         if (x_pos > x_old){
 
           // erase left column
-          draw_rectangle(x_old, y_pos, paddle_height, PADDLE_WIDTH,
+          draw_rectangle(x_old, y_pos, PADDLE_HEIGHT, PADDLE_WIDTH,
                         RGB_to_color(255, 255, 255));
 
           // draw right column  
-          draw_rectangle(x_old + PADDLE_WIDTH - 1, y_pos, paddle_height, PADDLE_WIDTH, 
+          draw_rectangle(x_old + PADDLE_WIDTH - 1, y_pos, PADDLE_HEIGHT, PADDLE_WIDTH, 
               RGB_to_color(255, 0, 0));              
         }
         else // Shift left
         {
 
           // erase right column
-          draw_rectangle(x_old + PADDLE_WIDTH - 1, y_pos, paddle_height, PADDLE_WIDTH,
+          draw_rectangle(x_old + PADDLE_WIDTH - 1, y_pos, PADDLE_HEIGHT, PADDLE_WIDTH,
                         RGB_to_color(255, 255, 255));
 
           // draw left column  
-          draw_rectangle(x_pos, y_pos, paddle_height, PADDLE_WIDTH,
+          draw_rectangle(x_pos, y_pos, PADDLE_HEIGHT, PADDLE_WIDTH,
               RGB_to_color(255, 0, 0));  
         }
 
         x_old = x_pos;
     }
 }
+
+
+void ball_object()
+{
+    static float ball_x = BALL_SPAWN_X;
+    static float ball_y = BALL_SPAWN_Y;
+    static float old_x = BALL_SPAWN_X;
+    static float old_y = BALL_SPAWN_Y;    
+    static float vel_x = -0.5;
+    static float vel_y = -0.5;
+    static bool initialized = false;
+
+    uint8_t radius = 5;
+
+    if (!initialized)
+    {
+        ball_x = BALL_SPAWN_X;
+        ball_y = BALL_SPAWN_Y;
+        old_x = ball_x;
+        old_y = ball_y;
+
+        vel_x = -0.5;
+        vel_y = -0.5;
+        initialized = true;
+    }
+
+    // --------------------------------------------
+    // ERASE ENTIRE OLD BALL — CLEAN METHOD
+    // --------------------------------------------
+    draw_circle(old_x, old_y, radius, RGB_to_color(255,255,255));
+
+    // --------------------------------------------
+    // UPDATE POSITION
+    // --------------------------------------------
+    ball_x += vel_x;
+    ball_y += vel_y;
+
+    // --------------------------------------------
+    // SCREEN BOUNCING
+    // --------------------------------------------
+    if (ball_x - radius <= 0 || ball_x + radius >= SCREEN_WIDTH)
+        vel_x = -vel_x;
+
+    if (ball_y - radius <= 0 || ball_y + radius >= 128) // SCREEN_HEIGHT = 128?
+        vel_y = -vel_y;
+
+    // --------------------------------------------
+    // DRAW NEW BALL
+    // --------------------------------------------
+    draw_circle(ball_x, ball_y, radius, RGB_to_color(255,0,0));
+
+    // Save position
+    old_x = ball_x;
+    old_y = ball_y;
+}
+
+
+
+
+
 
 
 

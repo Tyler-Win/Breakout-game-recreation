@@ -81,6 +81,15 @@
                 "name": "Project",
                 "resourceId": "/Project/gfx.c"
             }
+        },
+        {
+            "name": "Project (9)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/ST7735S.c"
+            }
         }
     ]
 }
