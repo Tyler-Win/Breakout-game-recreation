@@ -48,6 +48,7 @@
 void run_breakout();
 void paddle_object();
 void ball_object();
+void square_object(uint8_t x, uint8_t y, color565_t color);
 
 void pushbutton_test();
 uint8_t filter_adc_val(uint8_t raw_val);
@@ -62,14 +63,16 @@ uint8_t filter_adc_val(uint8_t raw_val);
 #define PADDLE_WIDTH 40
 #define PADDLE_HEIGHT 8
 
-#define BALL_SPAWN_X (SCREEN_WIDTH / 2)
-#define BALL_SPAWN_Y (110 - 6)
-
 //-----------------------------------------------------------------------------
 // Define global variables and structures here.
 // NOTE: when possible avoid using global variables
 //-----------------------------------------------------------------------------
 int16_t paddle_x_global = 40;
+float ball_x_global = 0;
+float ball_y_global = 0;
+float old_ball_x_global = 0;
+float old_ball_y_global = 0;
+
 
 int main(void) {
   // Initialize 
@@ -108,6 +111,9 @@ void run_breakout()
 {
   paddle_object();
   ball_object();
+
+  square_object(80, 40, RED);
+
   msec_delay(8);
 }
 
@@ -115,7 +121,7 @@ void run_breakout()
 // the joystic
 void paddle_object()
 {
-    static int16_t x_pos = PADDLE_SPAWN_X;     // initial paddle position
+    static int16_t x_pos = PADDLE_SPAWN_X;   // initial paddle position
     static int16_t x_old = PADDLE_OLD_X;     // old value that gets compared
 
     int16_t y_pos = PADDLE_SPAWN_Y;                     // y-value for the platform
@@ -234,6 +240,13 @@ void ball_object()
     ball_x += vel_x;
     ball_y += vel_y;
 
+    // Update ball globally for squares
+    ball_x_global = ball_x;
+    ball_y_global = ball_y;
+
+    old_ball_x_global = old_x;
+    old_ball_y_global = old_y;
+
     // Ball paddle collision check
     bool x_overlap = (ball_x + radius >= paddle_x) && 
                      (ball_x - radius <= paddle_x + PADDLE_WIDTH);
@@ -286,6 +299,95 @@ void ball_object()
       draw_circle(ball_x, ball_y, radius, PURPLE);     
     }          
     
+}
+
+void square_object(uint8_t square_x, uint8_t square_y, color565_t color)
+{
+  uint8_t square_width = 20;
+  uint8_t square_height = 20;
+  static bool terminated = false;
+
+  // Ball's X, Y, and radius
+  int8_t ball_x = ball_x_global;
+  int8_t ball_y = ball_y_global;
+  int8_t old_x = old_ball_x_global;
+  int8_t old_y = old_ball_y_global;
+  int8_t radius = 5;
+
+  // draw square
+  if (!terminated){
+      draw_rectangle(square_x, square_y, square_width, square_height, color);
+  }
+
+  // Ball square collision check
+
+  // If ball hits from the top of the rectangle
+  bool top_x_overlap = (ball_x + radius >= square_x) && 
+                       (ball_x - radius <= square_x + square_width);
+
+  bool top_y_overlap = (ball_y + radius >= square_y) && (old_y < square_height);
+
+
+  // If ball hits from the left of the rectangle
+  bool left_x_overlap = (ball_x + radius >= square_x) && (old_x < square_x);
+
+  bool left_y_overlap = (ball_y + radius >= square_y) &&
+                        (ball_y - radius <= square_y + square_height);
+
+
+  // If ball hits from the right of the rectangle
+  bool right_x_overlap = (ball_x - radius <= square_x + square_width) &&
+                         (old_x > square_width);
+
+  bool right_y_overlap = (ball_y + radius >= square_y) &&
+                         (ball_y - radius <= square_y + square_height);
+
+
+  // If ball hits from the bottom of the rectangle                                           
+  bool bottom_x_overlap = (ball_x + radius >= square_x) &&
+                          (ball_x - radius <= square_x + square_width);
+
+  bool bottom_y_overlap = (ball_y + radius <= square_y) && 
+                          (old_y > square_height);                         
+
+
+  if (top_x_overlap && top_y_overlap)
+  {
+    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
+
+    // Ball doesn't fall into square
+    ball_y = square_y - radius - 1;    
+    terminated = true;
+  }   
+
+  if (left_x_overlap && left_y_overlap)
+  {
+    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
+
+    // Ball doesn't fall into square
+    ball_x = square_x - radius - 1;    
+    terminated = true;
+  }
+
+  if (right_x_overlap && right_y_overlap)
+  {
+    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
+
+    // Ball doesn't fall into square
+    ball_x = square_x + radius - 1;    
+    terminated = true;
+  }
+
+  if (bottom_x_overlap && bottom_y_overlap)
+  {
+    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
+
+    // Ball doesn't fall into square
+    ball_y = square_x + radius - 1;    
+    terminated = true;
+  }
+
+
 }
 
 

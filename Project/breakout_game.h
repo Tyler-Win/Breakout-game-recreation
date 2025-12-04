@@ -43,12 +43,17 @@
 #define TWO_PPF                                                                2
 
 // Ball object
-#define BALL_SPAWN_X                                          (SCREEN_WIDTH / 2)
+#define BALL_SPAWN_X                                     (SCREEN_WIDTH / 2)
 #define BALL_SPAWN_Y                                                   (110 - 6)
 
 // Colors
 #define WHITE                                        RGB_to_color(255, 255, 255)
 #define RED                                              RGB_to_color(255, 0, 0)
+#define GREEN                                            RGB_to_color(0, 255, 0)
+#define BLUE                                             RGB_to_color(0, 0, 255)
 #define PURPLE                                         RGB_to_color(255, 0, 255)
+#define YELLOW                                         RGB_to_color(255, 255, 0)
+#define CYAN                                           RGB_to_color(0, 255, 255)
+#define ORANGE                                         RGB_to_color(255, 69, 0)
 
 #endif /* __SPI_H__ */
