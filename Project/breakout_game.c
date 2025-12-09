@@ -74,7 +74,7 @@ typedef struct {
 typedef struct{
   Ball ball;
   Paddle paddle;
-  Brick bricks[10];
+  Brick bricks[15];
 } GameState;
 
 void run_breakout(GameState *game);
@@ -93,7 +93,18 @@ void update_bricks(GameState *game, int brick_index, color565_t color);
 #define PADDLE_HEIGHT 8
 #define BALL_RADIUS 5
 #define BRICK_WIDTH 20
-#define BRICK_HEIGHT 20
+#define BRICK_HEIGHT 10
+
+#define ROW_1 5
+#define ROW_2 20
+#define ROW_3 35
+
+#define COLUMN_1 5
+#define COLUMN_2 30
+#define COLUMN_3 55
+#define COLUMN_4 80
+#define COLUMN_5 105
+#define COLUMN_6 130
 
 //-----------------------------------------------------------------------------
 // Define global variables and structures here.
@@ -141,10 +152,68 @@ int main(void) {
       }
   };
 
-  game.bricks[1].x = 5 + (1 * (BRICK_WIDTH + 5));
-  game.bricks[1].y = 20;
+  // First row
+  game.bricks[1].x = COLUMN_1;
+  game.bricks[1].y = ROW_1;
   game.bricks[1].alive = true;
+
+  game.bricks[2].x = COLUMN_2;
+  game.bricks[2].y = ROW_1;
+  game.bricks[2].alive = true;
+
+  game.bricks[3].x = COLUMN_3;
+  game.bricks[3].y = ROW_1;
+  game.bricks[3].alive = true;
+
+  game.bricks[4].x = COLUMN_4;
+  game.bricks[4].y = ROW_1;
+  game.bricks[4].alive = true;
+
+  game.bricks[5].x = COLUMN_5;
+  game.bricks[5].y = ROW_1;
+  game.bricks[5].alive = true;  
+
+  game.bricks[6].x = COLUMN_1;
+  game.bricks[6].y = ROW_2;
+  game.bricks[6].alive = true;  
+
+  game.bricks[7].x = COLUMN_2;
+  game.bricks[7].y = ROW_2;
+  game.bricks[7].alive = true;  
+
+  game.bricks[8].x = COLUMN_3;
+  game.bricks[8].y = ROW_2;
+  game.bricks[8].alive = true;    
+
+  game.bricks[9].x = COLUMN_4;
+  game.bricks[9].y = ROW_2;
+  game.bricks[9].alive = true;  
+
+  game.bricks[10].x = COLUMN_5;
+  game.bricks[10].y = ROW_2;
+  game.bricks[10].alive = true;
+
+  game.bricks[11].x = COLUMN_1;
+  game.bricks[11].y = ROW_3;
+  game.bricks[11].alive = true;  
+
+  game.bricks[12].x = COLUMN_2;
+  game.bricks[12].y = ROW_3;
+  game.bricks[12].alive = true;  
+
+  game.bricks[13].x = COLUMN_3;
+  game.bricks[13].y = ROW_3;
+  game.bricks[13].alive = true;    
+
+  game.bricks[14].x = COLUMN_4;
+  game.bricks[14].y = ROW_3;
+  game.bricks[14].alive = true;  
+
+  game.bricks[15].x = COLUMN_5;
+  game.bricks[15].y = ROW_3;
+  game.bricks[15].alive = true;        
   
+
   while (1) {
     run_breakout(&game);
   }
@@ -157,8 +226,16 @@ void run_breakout(GameState *game)
   update_paddle(game);
   update_ball(game);
 
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i <= 5; i++) {
     update_bricks(game, i, RED);
+  }
+
+  for (int i = 6; i <= 10; i++) {
+    update_bricks(game, i, ORANGE);
+  }
+
+  for (int i = 11; i <= 15; i++) {
+    update_bricks(game, i, BLUE);
   }
   msec_delay(8);
 }
@@ -336,40 +413,40 @@ void update_bricks(GameState *game, int brick_index, color565_t color)
 
   if (*alive) {
     draw_rectangle(brick_x, brick_y, brick_width, brick_height, color);
-  }
 
-  // --- Collision detection ---
-  // Top
-  bool top_hit = (*ball_x + radius >= brick_x) &&
-                  (*ball_x - radius <= brick_x + brick_width) &&
-                  (*ball_old_y + radius <= brick_y) &&
-                  (*ball_y + radius >= brick_y);
-
-  // Bottom
-  bool bottom_hit = (*ball_x + radius >= brick_x) &&
+    // Collision detection
+    // top
+    bool top_hit = (*ball_x + radius >= brick_x) &&
                     (*ball_x - radius <= brick_x + brick_width) &&
-                    (*ball_old_y - radius >= brick_y + brick_height) &&
-                    (*ball_y - radius <= brick_y + brick_height);
+                    (*ball_old_y + radius <= brick_y) &&
+                    (*ball_y + radius >= brick_y);
 
-  // Left
-  bool left_hit = (*ball_y + radius >= brick_y) &&
-                  (*ball_y - radius <= brick_y + brick_height) &&
-                  (*ball_old_x + radius <= brick_x) &&
-                  (*ball_x + radius >= brick_x);
+    // Bottom
+    bool bottom_hit = (*ball_x + radius >= brick_x) &&
+                      (*ball_x - radius <= brick_x + brick_width) &&
+                      (*ball_old_y - radius >= brick_y + brick_height) &&
+                      (*ball_y - radius <= brick_y + brick_height);
 
-  // Right
-  bool right_hit = (*ball_y + radius >= brick_y) &&
+    // Left
+    bool left_hit = (*ball_y + radius >= brick_y) &&
                     (*ball_y - radius <= brick_y + brick_height) &&
-                    (*ball_old_x - radius >= brick_x + brick_width) &&
-                    (*ball_x - radius <= brick_x + brick_width);
+                    (*ball_old_x + radius <= brick_x) &&
+                    (*ball_x + radius >= brick_x);
 
-  if (top_hit || bottom_hit) {
-    *vel_y = -*vel_y;
-    *alive = false;
-    draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
-  } else if (left_hit || right_hit){
-    *vel_x = -*vel_x;
-    *alive = false;
-    draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
+    // Right
+    bool right_hit = (*ball_y + radius >= brick_y) &&
+                      (*ball_y - radius <= brick_y + brick_height) &&
+                      (*ball_old_x - radius >= brick_x + brick_width) &&
+                      (*ball_x - radius <= brick_x + brick_width);
+
+    if (top_hit || bottom_hit) {
+      *vel_y = -*vel_y;
+      *alive = false;
+      draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
+    } else if (left_hit || right_hit){
+      *vel_x = -*vel_x;
+      *alive = false;
+      draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
+    }    
   }
 }
