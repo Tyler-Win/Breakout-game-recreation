@@ -108,6 +108,15 @@
                 "name": "Project",
                 "resourceId": "/Project/breakout_game.h"
             }
+        },
+        {
+            "name": "Project (12)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/breakout_game-Radahn.c"
+            }
         }
     ]
 }

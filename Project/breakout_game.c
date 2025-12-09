@@ -45,13 +45,42 @@
 //-----------------------------------------------------------------------------
 // Define function prototypes used by the program
 //-----------------------------------------------------------------------------
-void run_breakout();
-void paddle_object();
-void ball_object();
-void square_object(uint8_t x, uint8_t y, color565_t color);
 
-void pushbutton_test();
-uint8_t filter_adc_val(uint8_t raw_val);
+typedef struct {
+    int16_t x_pos;
+    int16_t y_pos;
+    int16_t width;
+    int16_t height;
+    int16_t x_old;
+    bool first_draw_done;
+} Paddle;
+
+typedef struct {
+    float x;
+    float y;
+    float x_old;
+    float y_old;
+    float vel_x;
+    float vel_y;
+    uint8_t radius;
+} Ball;
+
+typedef struct {
+    int16_t x;
+    int16_t y;
+    bool alive;
+} Brick;
+
+typedef struct{
+  Ball ball;
+  Paddle paddle;
+  Brick bricks[10];
+} GameState;
+
+void run_breakout(GameState *game);
+void update_paddle(GameState *game);
+void update_ball(GameState *game);
+void update_bricks(GameState *game, int brick_index, color565_t color);
 
 //-----------------------------------------------------------------------------
 // Define symbolic constants used by the program
@@ -62,17 +91,14 @@ uint8_t filter_adc_val(uint8_t raw_val);
 #define SCREEN_HEIGHT 128
 #define PADDLE_WIDTH 40
 #define PADDLE_HEIGHT 8
+#define BALL_RADIUS 5
+#define BRICK_WIDTH 20
+#define BRICK_HEIGHT 20
 
 //-----------------------------------------------------------------------------
 // Define global variables and structures here.
 // NOTE: when possible avoid using global variables
 //-----------------------------------------------------------------------------
-int16_t paddle_x_global = 40;
-float ball_x_global = 0;
-float ball_y_global = 0;
-float old_ball_x_global = 0;
-float old_ball_y_global = 0;
-
 
 int main(void) {
   // Initialize 
@@ -92,309 +118,258 @@ int main(void) {
   ST7735S_init();
   ST7735S_clear_lcd(WHITE);
 
+  GameState game = {
+      .paddle = {
+          .x_pos = 40,
+          .y_pos = PADDLE_SPAWN_Y,
+          .width = PADDLE_WIDTH,
+          .height = PADDLE_HEIGHT,
+          .x_old = -1,
+          .first_draw_done = false
+      },
+      .ball = {
+          .x = BALL_SPAWN_X,
+          .y = BALL_SPAWN_Y,
+          .x_old = 0,
+          .y_old = 0,
+          .vel_x = 0.5f,
+          .vel_y = -0.5f,
+          .radius = BALL_RADIUS
+      },
+      .bricks = {
 
+      }
+  };
 
-  // Uncomment song name to test with RGBs
-  //potter();
-  // smallworld();
-  // mario();
-
-  // Endless loop to prevent program from ending
-
+  game.bricks[1].x = 5 + (1 * (BRICK_WIDTH + 5));
+  game.bricks[1].y = 20;
+  game.bricks[1].alive = true;
+  
   while (1) {
-    run_breakout();
+    run_breakout(&game);
   }
 }
 /* main */
 
-void run_breakout()
+
+void run_breakout(GameState *game)
 {
-  paddle_object();
-  ball_object();
+  update_paddle(game);
+  update_ball(game);
 
-  square_object(80, 40, RED);
-
+  for (int i = 0; i < 10; i++) {
+    update_bricks(game, i, RED);
+  }
   msec_delay(8);
 }
 
-// Creates a paddle that can be manipulated using
-// the joystic
-void paddle_object()
+
+void update_paddle(GameState *game)
 {
-    static int16_t x_pos = PADDLE_SPAWN_X;   // initial paddle position
-    static int16_t x_old = PADDLE_OLD_X;     // old value that gets compared
+  Paddle *paddle = &game->paddle;
 
-    int16_t y_pos = PADDLE_SPAWN_Y;                     // y-value for the platform
-    int16_t fast_paddle_speed = TWO_PPF;           // pixels per frame
-    int16_t slow_paddle_speed = ONE_PPF;           // pixels per frame
+  // Local aliases for paddle
+  int16_t *x_pos = &paddle->x_pos;
+  int16_t *x_old = &paddle->x_old;
+  int16_t y_pos = paddle->y_pos;
+  int16_t width = paddle->width;
+  int16_t height = paddle->height;
+  bool *first_draw_done = &paddle->first_draw_done;
 
-    int16_t joy_x = ADC0_in(X_AXIS);    // read X-axis joystick
+  int16_t fast_paddle_speed = TWO_PPF;
+  int16_t slow_paddle_speed = ONE_PPF;
+  int16_t joy_x = ADC0_in(X_AXIS);
 
-    // Move right quickly if joystick pushed far
-    if (joy_x > FAR_RIGHT_JOYSTICK_VALUE) {
-        x_pos += fast_paddle_speed;
-    }
-    // Move right slowly if pushed lightly
-    else if (joy_x > RIGHT_JOYSTICK_VALUE) {
-        x_pos += slow_paddle_speed;
-    }
-    // Move left slowly if joystick pushed lightly
-    else if (joy_x < FAR_LEFT_JOYSTICK_VALUE){
-      x_pos -= fast_paddle_speed;
-    }
-    // Move left quickly if joystick pushed far
-    else if (joy_x < LEFT_JOYSTICK_VALUE){
-      x_pos -= slow_paddle_speed;
-    }
-    // If in the middle, do nothing (neutral)
-    else {
-        // x_pos stays the same
-    }
+  // Move paddle based on joystick input
+  if (joy_x > FAR_RIGHT_JOYSTICK_VALUE) 
+  {
+    *x_pos += fast_paddle_speed;
+  } 
+  else if (joy_x > RIGHT_JOYSTICK_VALUE) 
+  {
+    *x_pos += slow_paddle_speed;
+  } 
+  else if (joy_x < FAR_LEFT_JOYSTICK_VALUE) 
+  {      
+    *x_pos -= fast_paddle_speed;
+  } 
+  else if (joy_x < LEFT_JOYSTICK_VALUE) 
+  {
+    *x_pos -= slow_paddle_speed;
+  }
 
-    // Clamps paddle to screen boundaries
-    if (x_pos < 0){
-      x_pos = 0;
-    }
+  // Clamp to screen boundaries
+  if (*x_pos < 0)
+  {
+    *x_pos = 0;
+  }
 
-    // Ensures the right end of paddle hits right 
-    // end of paddle screen
-    if (x_pos > SCREEN_WIDTH - PADDLE_WIDTH){
-      x_pos = SCREEN_WIDTH - PADDLE_WIDTH;
-    }
+  if (*x_pos > SCREEN_WIDTH - 47)
+  {
+    *x_pos = SCREEN_WIDTH - 47;
+  }
 
-    // Prints out first rectangle
-    if (x_old == x_pos){
-      static bool first_draw_done = false;
-      if (!first_draw_done) {
-        draw_rectangle(x_pos, y_pos, PADDLE_WIDTH, PADDLE_HEIGHT, 
-                       RED);
-        first_draw_done = true;               
+  // Draw first time
+  if (!*first_draw_done) {
+      draw_rectangle(*x_pos, y_pos, width, height, RED);
+      *first_draw_done = true;
+      *x_old = *x_pos;
+  }
+
+  // Only redraw if position changed
+  if (*x_pos != *x_old) {
+      if (*x_pos > *x_old) {
+          // moving right: erase left, draw right
+          draw_rectangle(*x_old, y_pos, height, width, WHITE);
+          draw_rectangle(*x_pos + width - 1, y_pos, height, width, RED);
+      } else {
+          // moving left: erase right, draw left
+          draw_rectangle(*x_old + width - 1, y_pos, height, width, WHITE);
+          draw_rectangle(*x_pos, y_pos, height, width, RED);
       }
-    }
-
-    // Only redraw if position changed
-    if (x_pos != x_old)
-    {
-        // Shift right
-        if (x_pos > x_old){
-
-          // erase left column
-          draw_rectangle(x_old, y_pos, PADDLE_HEIGHT, PADDLE_WIDTH,
-                        WHITE);
-
-          // draw right column  
-          draw_rectangle(x_old + PADDLE_WIDTH - ONE_WIDTH, y_pos, 
-                        PADDLE_HEIGHT, PADDLE_WIDTH, RED);              
-        }
-        else // Shift left
-        {
-          
-          // erase right column
-          draw_rectangle(x_old + PADDLE_WIDTH - ONE_WIDTH, y_pos, 
-                        PADDLE_HEIGHT, PADDLE_WIDTH, WHITE);
-
-          // draw left column  
-          draw_rectangle(x_pos, y_pos, PADDLE_HEIGHT, PADDLE_WIDTH, RED);  
-        }
-
-        x_old = x_pos;
-        paddle_x_global = x_pos;
-    }
+      *x_old = *x_pos;
+  }
 }
 
-
-void ball_object()
+void update_ball(GameState *game)
 {
-    static float ball_x = 0;          // balls' x coord
-    static float ball_y = 0;          // ball's y coord
-    static float vel_x = -0.5;        // speed in the x direction
-    static float vel_y = -0.5;        // speed in the y direction
-    static float old_x = 0;
-    static float old_y = 0;        
-    static bool initialized = false;       
-    uint8_t radius = 5;
-    int16_t paddle_y = 120;
+  Ball *ball_ptr = &game->ball;
+  Paddle *paddle_ptr = &game->paddle;
 
-    int16_t paddle_x = paddle_x_global;    
+  // Local aliases for ball 
+  float *x_pos = &ball_ptr->x;
+  float *y_pos = &ball_ptr->y;
+  float *x_old_pos = &ball_ptr->x_old;
+  float *y_old_pos = &ball_ptr->y_old;
+  float *vel_x = &ball_ptr->vel_x;  
+  float *vel_y = &ball_ptr->vel_y;
+  int8_t radius = ball_ptr->radius;
 
-    // ensures balls spawns in same area each time
-    if (!initialized)
-    {
-        ball_x = BALL_SPAWN_X;
-        ball_y = BALL_SPAWN_Y;
-        old_x = ball_x;
-        old_y = ball_y;
+  // Local aliases for paddle
+  int16_t paddle_x = paddle_ptr->x_pos;
+  int16_t paddle_y = paddle_ptr->y_pos;
+  int16_t paddle_width = paddle_ptr->width;
+  int16_t paddle_height = paddle_ptr->height;
+  
 
-        vel_x = -0.5;  // initial launch direction
-        vel_y = -0.5;
-        initialized = true;
-    }
+  draw_circle(*x_pos, *y_pos, radius, WHITE);
 
-    // Erase previous ball
-    draw_circle(ball_x, ball_y, radius, RGB_to_color(255, 255, 255));
+  *x_old_pos = *x_pos;
+  *y_old_pos = *y_pos;
 
-    old_x = ball_x;
-    old_y = ball_y;
+  // update ball position
+  *x_pos += *vel_x;
+  *y_pos += *vel_y;
 
-    // Update ball position
-    ball_x += vel_x;
-    ball_y += vel_y;
-
-    // Update ball globally for squares
-    ball_x_global = ball_x;
-    ball_y_global = ball_y;
-
-    old_ball_x_global = old_x;
-    old_ball_y_global = old_y;
-
-    // Ball paddle collision check
-    bool x_overlap = (ball_x + radius >= paddle_x) && 
-                     (ball_x - radius <= paddle_x + PADDLE_WIDTH);
-
-    bool y_overlap = (ball_y + radius >= paddle_y) && (old_y < paddle_y);
+  // Ball & Paddle collision check
+  bool x_overlap = (*x_pos + radius >= paddle_x) &&
+                   (*x_pos - radius <= paddle_x + paddle_width);
+  
+  bool y_overlap = (*y_pos + radius >= paddle_y) && (*y_old_pos < paddle_y);
 
 
-    if (x_overlap && y_overlap)
-    {
-      vel_y = -vel_y;
+  if (x_overlap && y_overlap)
+  {
+    *vel_y = -*vel_y;
 
-      // change vel_x based on where ball hits paddle
-      float hit_position = (ball_x - (paddle_x + PADDLE_WIDTH/2));
-      vel_x += hit_position * 0.02;
+    // change vel_x based on where ball hits paddle
+    float hit_position = (*x_pos - (paddle_x + PADDLE_WIDTH/2));
+    *vel_x += hit_position * 0.02;
 
-      // Ball doesn't fall into
-      ball_y = paddle_y - radius - 1;
-    }      
+    // Ball won't travel into paddle
+    *y_pos = paddle_y - radius - 1;
+  }      
 
-    // if the ball's x/y goes outside the left or right walls
-    // then invert vel_x, add to ball_x, and randomize the balls 
-    // y speed
-    if (ball_x - radius <= 0 || ball_x + radius >= SCREEN_WIDTH)
-    {
-        vel_x = -vel_x;
-        ball_x += vel_x;
-        vel_y += ((rand() % 4) - 2) * 0.1;  // slight variation
-    }
+  // if the ball's x/y goes outside the left or right walls
+  // then invert vel_x, add to ball_x, and randomize the balls 
+  // y speed
+  if (*x_pos - radius <= 0 || *x_pos + radius >= SCREEN_WIDTH)
+  {
+      *vel_x = -*vel_x;
+      *x_pos += *vel_x;
+      *vel_y += ((rand() % 4) - 2) * 0.1;  // slight variation
+  }
 
-    // if the ball's x/y goes outside the top or bottom walls
-    // then invert vel_y, add to ball_y, and randomize the balls 
-    // x speed
-    if (ball_y - radius <= 0)
-    {
-        vel_y = -vel_y;
-        ball_y += vel_y;
-        vel_x += ((rand() % 4) - 2) * 0.1;  // slight variation
-    }
+  // if the ball's x/y goes outside the top or bottom walls
+  // then invert vel_y, add to ball_y, and randomize the balls 
+  // x speed
+  if (*y_pos - radius <= 0)
+  {
+      *vel_y = -*vel_y;
+      *y_pos += *vel_y;
+      *vel_x += ((rand() % 4) - 2) * 0.1;  // slight variation
+  }
 
-    // Hits floor. Game over
-    if (ball_y + radius >= SCREEN_HEIGHT)
-    {
-      vel_y = 0;
-      vel_x = 0;
-      msec_delay(5);
-      initialized = false;
-      draw_circle(ball_x, ball_y, radius, WHITE);
-    } else {
-      // Draw ball at new position
-      draw_circle(ball_x, ball_y, radius, PURPLE);     
-    }          
-    
+  // Hits floor. Game over
+  if (*y_pos + radius >= SCREEN_HEIGHT)
+  {
+    *x_pos = BALL_SPAWN_X;
+    *y_pos = BALL_SPAWN_Y;
+    *vel_x = 0.5f;
+    *vel_y = -0.5f;
+    draw_circle(*x_pos, *y_pos, radius, WHITE);
+  } else {
+    // Draw ball at new position
+    draw_circle(*x_pos, *y_pos, radius, PURPLE);     
+  }          
 }
 
-void square_object(uint8_t square_x, uint8_t square_y, color565_t color)
+void update_bricks(GameState *game, int brick_index, color565_t color)
 {
-  uint8_t square_width = 20;
-  uint8_t square_height = 20;
-  static bool terminated = false;
+  Ball *ball_ptr = &game->ball;
+  Brick *brick_ptr = &game->bricks[brick_index];
 
-  // Ball's X, Y, and radius
-  int8_t ball_x = ball_x_global;
-  int8_t ball_y = ball_y_global;
-  int8_t old_x = old_ball_x_global;
-  int8_t old_y = old_ball_y_global;
-  int8_t radius = 5;
+  // Local aliases for ball
+  float *ball_x = &ball_ptr->x;
+  float *ball_y = &ball_ptr->y;
+  float *ball_old_x = &ball_ptr->x_old;
+  float *ball_old_y = &ball_ptr->y_old;
+  float *vel_x = &ball_ptr->vel_x;  
+  float *vel_y = &ball_ptr->vel_y;
+  int8_t radius = ball_ptr->radius;
 
-  // draw square
-  if (!terminated){
-      draw_rectangle(square_x, square_y, square_width, square_height, color);
+  int16_t brick_x = brick_ptr->x;
+  int16_t brick_y = brick_ptr->y;
+  bool *alive = &brick_ptr->alive;
+  uint8_t brick_width = BRICK_WIDTH;
+  uint8_t brick_height = BRICK_HEIGHT;
+
+  if (*alive) {
+    draw_rectangle(brick_x, brick_y, brick_width, brick_height, color);
   }
 
-  // Ball square collision check
+  // --- Collision detection ---
+  // Top
+  bool top_hit = (*ball_x + radius >= brick_x) &&
+                  (*ball_x - radius <= brick_x + brick_width) &&
+                  (*ball_old_y + radius <= brick_y) &&
+                  (*ball_y + radius >= brick_y);
 
-  // If ball hits from the top of the rectangle
-  bool top_x_overlap = (ball_x + radius >= square_x) && 
-                       (ball_x - radius <= square_x + square_width);
+  // Bottom
+  bool bottom_hit = (*ball_x + radius >= brick_x) &&
+                    (*ball_x - radius <= brick_x + brick_width) &&
+                    (*ball_old_y - radius >= brick_y + brick_height) &&
+                    (*ball_y - radius <= brick_y + brick_height);
 
-  bool top_y_overlap = (ball_y + radius >= square_y) && (old_y < square_height);
+  // Left
+  bool left_hit = (*ball_y + radius >= brick_y) &&
+                  (*ball_y - radius <= brick_y + brick_height) &&
+                  (*ball_old_x + radius <= brick_x) &&
+                  (*ball_x + radius >= brick_x);
 
+  // Right
+  bool right_hit = (*ball_y + radius >= brick_y) &&
+                    (*ball_y - radius <= brick_y + brick_height) &&
+                    (*ball_old_x - radius >= brick_x + brick_width) &&
+                    (*ball_x - radius <= brick_x + brick_width);
 
-  // If ball hits from the left of the rectangle
-  bool left_x_overlap = (ball_x + radius >= square_x) && (old_x < square_x);
-
-  bool left_y_overlap = (ball_y + radius >= square_y) &&
-                        (ball_y - radius <= square_y + square_height);
-
-
-  // If ball hits from the right of the rectangle
-  bool right_x_overlap = (ball_x - radius <= square_x + square_width) &&
-                         (old_x > square_width);
-
-  bool right_y_overlap = (ball_y + radius >= square_y) &&
-                         (ball_y - radius <= square_y + square_height);
-
-
-  // If ball hits from the bottom of the rectangle                                           
-  bool bottom_x_overlap = (ball_x + radius >= square_x) &&
-                          (ball_x - radius <= square_x + square_width);
-
-  bool bottom_y_overlap = (ball_y + radius <= square_y) && 
-                          (old_y > square_height);                         
-
-
-  if (top_x_overlap && top_y_overlap)
-  {
-    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
-
-    // Ball doesn't fall into square
-    ball_y = square_y - radius - 1;    
-    terminated = true;
-  }   
-
-  if (left_x_overlap && left_y_overlap)
-  {
-    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
-
-    // Ball doesn't fall into square
-    ball_x = square_x - radius - 1;    
-    terminated = true;
+  if (top_hit || bottom_hit) {
+    *vel_y = -*vel_y;
+    *alive = false;
+    draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
+  } else if (left_hit || right_hit){
+    *vel_x = -*vel_x;
+    *alive = false;
+    draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
   }
-
-  if (right_x_overlap && right_y_overlap)
-  {
-    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
-
-    // Ball doesn't fall into square
-    ball_x = square_x + radius - 1;    
-    terminated = true;
-  }
-
-  if (bottom_x_overlap && bottom_y_overlap)
-  {
-    draw_rectangle(square_x, square_y, square_width, square_height, WHITE);
-
-    // Ball doesn't fall into square
-    ball_y = square_x + radius - 1;    
-    terminated = true;
-  }
-
-
 }
-
-
-
-
-
-
-
-
-
