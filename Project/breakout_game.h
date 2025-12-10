@@ -52,5 +52,6 @@
 #define PURPLE                                         RGB_to_color(255, 0, 255)
 #define ORANGE                                         RGB_to_color(255, 165, 0)
 #define BLUE                                             RGB_to_color(0, 0, 255)
+#define GREEN                                            RGB_to_color(0, 255, 0)
 
 #endif /* __SPI_H__ */

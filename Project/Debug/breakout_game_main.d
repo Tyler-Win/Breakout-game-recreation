@@ -1,6 +1,6 @@
 # FIXED
 
-breakout_game.o: ../breakout_game.c \
+breakout_game_main.o: ../breakout_game_main.c \
  C:/ti/mspm0_sdk_2_04_00_06/source/ti/devices/msp/msp.h \
  C:/ti/mspm0_sdk_2_04_00_06/source/ti/devices/DeviceFamily.h \
  C:/ti/mspm0_sdk_2_04_00_06/source/ti/devices/msp/m0p/mspm0g350x.h \

@@ -126,6 +126,15 @@
                 "name": "Project",
                 "resourceId": "/Project/adc.c"
             }
+        },
+        {
+            "name": "Project (14)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/readme.md"
+            }
         }
     ]
 }

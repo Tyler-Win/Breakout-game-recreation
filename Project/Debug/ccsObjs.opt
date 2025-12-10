@@ -2,7 +2,7 @@
 "./ST7735S.o"
 "./adc.o"
 "./booster.o"
-"./breakout_game.o"
+"./breakout_game_main.o"
 "./clock.o"
 "./gfx.o"
 "./lcd1602.o"

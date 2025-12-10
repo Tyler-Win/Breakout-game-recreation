@@ -14,7 +14,7 @@ ORDERED_OBJS += \
 "./ST7735S.o" \
 "./adc.o" \
 "./booster.o" \
-"./breakout_game.o" \
+"./breakout_game_main.o" \
 "./clock.o" \
 "./gfx.o" \
 "./lcd1602.o" \
@@ -150,15 +150,15 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 Project.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: Arm Linker'
-	"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/bin/tiarmclang.exe" -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -O0 -D__MSPM0G3507__ -gdwarf-3 -Wl,-m"Project.map" -Wl,--heap_size=0x800 -Wl,--stack_size=512 -Wl,-i"C:/ti/mspm0_sdk_2_04_00_06/source" -Wl,-i"C:/Users/tyler/OneDrive - Monroe Community College/Fall 2025/Embedded micro/Final_Project_Workspace/Project" -Wl,-i"C:/Users/tyler/OneDrive - Monroe Community College/Fall 2025/Embedded micro/Final_Project_Workspace/Project/Debug/syscfg" -Wl,-i"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="Project_linkInfo.xml" -Wl,--rom_model -o "Project.out" $(ORDERED_OBJS)
+	"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/bin/tiarmclang.exe" -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -O0 -D__MSPM0G3507__ -gdwarf-3 -Wl,-m"Project.map" -Wl,--heap_size=0x800 -Wl,--stack_size=512 -Wl,-i"C:/ti/mspm0_sdk_2_04_00_06/source" -Wl,-i"C:/Users/plazm/OneDrive - Monroe Community College/Fall 2025/Embedded micro/Final_Project_Workspace/Project" -Wl,-i"C:/Users/plazm/OneDrive - Monroe Community College/Fall 2025/Embedded micro/Final_Project_Workspace/Project/Debug/syscfg" -Wl,-i"C:/ti/ccstheia151/ccs/tools/compiler/ti-cgt-armllvm_4.0.0.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="Project_linkInfo.xml" -Wl,--rom_model -o "Project.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "LaunchPad.o" "ST7735S.o" "adc.o" "booster.o" "breakout_game.o" "clock.o" "gfx.o" "lcd1602.o" "mario.o" "pitches.o" "potter.o" "smallworld.o" "spi.o" "uart.o" "ticlang\startup_mspm0g3507_ticlang.o" 
-	-$(RM) "LaunchPad.d" "ST7735S.d" "adc.d" "booster.d" "breakout_game.d" "clock.d" "gfx.d" "lcd1602.d" "mario.d" "pitches.d" "potter.d" "smallworld.d" "spi.d" "uart.d" "ticlang\startup_mspm0g3507_ticlang.d" 
+	-$(RM) "LaunchPad.o" "ST7735S.o" "adc.o" "booster.o" "breakout_game_main.o" "clock.o" "gfx.o" "lcd1602.o" "mario.o" "pitches.o" "potter.o" "smallworld.o" "spi.o" "uart.o" "ticlang\startup_mspm0g3507_ticlang.o" 
+	-$(RM) "LaunchPad.d" "ST7735S.d" "adc.d" "booster.d" "breakout_game_main.d" "clock.d" "gfx.d" "lcd1602.d" "mario.d" "pitches.d" "potter.d" "smallworld.d" "spi.d" "uart.d" "ticlang\startup_mspm0g3507_ticlang.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

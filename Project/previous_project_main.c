@@ -15,7 +15,8 @@
 //
 // DESCRIPTION:
 //    This program serves as a means to test the LP-MSPM0G3507 LaunchPad
-//     and the BOOSTXL-EDUMKII buzzer, push buttons, joystick, and RGBs
+//    and the BOOSTXL-EDUMKII buzzer, push buttons, joystick, and RGBs.
+//    This program
 //
 //*****************************************************************************
 //*****************************************************************************

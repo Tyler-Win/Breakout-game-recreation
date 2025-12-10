@@ -39,6 +39,8 @@ void draw_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height,
   }
 }
 
+
+// We added
 void draw_circle(uint8_t cx, uint8_t cy, uint8_t radius, color565_t color)
 {
   for (int y = -radius; y <= radius; y++) {
