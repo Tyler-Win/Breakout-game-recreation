@@ -134,7 +134,11 @@ typedef struct{
 //-----------------------------------------------------------------------------
 
 void run_breakout(GameState *game);
+<<<<<<< HEAD
 void handle_pause_menu(GameState *game);
+=======
+bool game_start(bool first);
+>>>>>>> 0a9b6a5926f6ea9355b900f3c01334217ac8a159
 void update_paddle(GameState *game);
 void update_ball(GameState *game);
 void update_bricks(GameState *game, int8_t brick_index, color565_t color);
@@ -229,6 +233,7 @@ int main(void) {
 
 void run_breakout(GameState *game)
 {
+<<<<<<< HEAD
   static bool screen_initialized = false;
 
   handle_pause_menu(game);
@@ -249,6 +254,12 @@ void run_breakout(GameState *game)
       set_bricks(game);
       update_lives_led(game->lives);
   }
+=======
+  update_paddle(game);
+  update_ball(game);
+  set_bricks(game);
+  update_lives_led(game->lives);
+>>>>>>> 0a9b6a5926f6ea9355b900f3c01334217ac8a159
 
   msec_delay(8);
 }
@@ -652,6 +663,7 @@ void play_life_lost_sound() {
   motor0_pwm_disable();
 }
 
+<<<<<<< HEAD
 //-----------------------------------------------------------------------------
 // DESCRIPTION:
 //    This function set's the color of the bricks when the program first
@@ -669,6 +681,8 @@ void play_life_lost_sound() {
 //    none
 // ----------------------------------------------------------------------------
 
+=======
+>>>>>>> 0a9b6a5926f6ea9355b900f3c01334217ac8a159
 void set_bricks(GameState *game)
 {
   color565_t brick_colors[NUM_ROWS] = {RED, ORANGE, BLUE, GREEN};
@@ -680,6 +694,7 @@ void set_bricks(GameState *game)
     }
   }
 }
+<<<<<<< HEAD
 
 //-----------------------------------------------------------------------------
 // DESCRIPTION:
@@ -729,3 +744,5 @@ void handle_pause_menu(GameState *game)
     last_pb1_state = pb1_now;
     last_pb2_state = pb2_now;
 }
+=======
+>>>>>>> 0a9b6a5926f6ea9355b900f3c01334217ac8a159
