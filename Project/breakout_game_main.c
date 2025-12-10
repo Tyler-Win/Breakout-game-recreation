@@ -1,8 +1,6 @@
 //*****************************************************************************
 //*****************************    C Source Code    ***************************
 //*****************************************************************************
-//*****************************    C Source Code    ***************************
-//*****************************************************************************
 //  DESIGNER NAME:  Tyler Huynh, Adnan Heganovic
 //
 //       LAB NAME:  Final Project
@@ -12,7 +10,7 @@
 //-----------------------------------------------------------------------------
 //
 // DESCRIPTION:
-//    This file serves as a recreation of the popular Atari game breakout
+//    This program serves as a recreation of the popular Atari game breakout
 //    designed to run on the LP-MSPM0G3507 LaunchPad with the use of the
 //    BOOSTXL-EDUMKII. Utilizes the BOOSTXL-EDUMKII SDK developed by Ryanne 
 //    Geiger.
@@ -32,12 +30,27 @@
 //        3, yellow is for 2, and red is for 1
 //      - If you lose all three lives, press the reset on the MSPM0G3507 to
 //        restart the game
-//
 //    
+//-----------------------------------------------------------------------------
+// DISCLAIMER
+//    This code was developed for educational purposes as part of the CSC202 
+//    course and is provided "as is" without warranties of any kind, whether 
+//    express, implied, or statutory.
 //
+//    The author and organization do not warrant the accuracy, completeness, or
+//    reliability of the code. The author and organization shall not be liable
+//    for any direct, indirect, incidental, special, exemplary, or consequential
+//    damages arising out of the use of or inability to use the code, even if
+//    advised of the possibility of such damages.
 //
-//*****************************************************************************
-//*****************************************************************************
+//    Use of this code is at your own risk, and it is recommended to validate
+//    and adapt the code for your specific application and hardware requirements.
+//
+// Copyright (c) 2024 by TBD
+//    You may use, edit, run or distribute this file as long as the above
+//    copyright notice remains
+// *****************************************************************************
+// *****************************************************************************
 
 //-----------------------------------------------------------------------------
 // Loads standard C include files
@@ -59,12 +72,24 @@
 #include "adc.h"
 #include "pitches.h"
 #include "gfx.h"
-#include "breakout_game.h"
+#include "BG.h"
+
 
 //-----------------------------------------------------------------------------
-// Define function prototypes used by the program
+// Define symbolic constants used by the program
+//-----------------------------------------------------------------------------
+#define HIGH_COLOR_TONE 100
+#define LOW_COLOR_TONE 5
+#define NO_COLOR_TONE 0
+#define PB_2                                                  1
+#define PB_1                                                  0
+
+//-----------------------------------------------------------------------------
+// Define global variable and structures here.
+// NOTE: when possible avoid using global variables
 //-----------------------------------------------------------------------------
 
+// Define a structure to hold Paddle data
 typedef struct {
     int16_t x_pos;
     int16_t y_pos;
@@ -74,6 +99,7 @@ typedef struct {
     bool first_draw_done;
 } Paddle;
 
+// Define a structure to hold Ball data
 typedef struct {
     float x;
     float y;
@@ -84,6 +110,7 @@ typedef struct {
     int8_t radius;
 } Ball;
 
+// Define a structure to hold Brick data
 typedef struct {
     int16_t x;
     int16_t y;
@@ -91,61 +118,32 @@ typedef struct {
     bool drawn;
 } Brick;
 
+// Define a structure to hold the state of Breakout
 typedef struct{
   Ball ball;
   Paddle paddle;
   Brick bricks[16];
   int8_t lives;
+
+  bool game_started;
+  bool game_paused;
 } GameState;
 
+//-----------------------------------------------------------------------------
+// Define function prototypes used by the program
+//-----------------------------------------------------------------------------
+
 void run_breakout(GameState *game);
+void handle_pause_menu(GameState *game);
 void update_paddle(GameState *game);
 void update_ball(GameState *game);
 void update_bricks(GameState *game, int8_t brick_index, color565_t color);
+void set_bricks(GameState *game);
 void update_lives_led(uint8_t lives);
 void play_brick_hit_sound();
 void play_life_lost_sound();
 void play_paddle_hit_sound();
 
-//-----------------------------------------------------------------------------
-// Define symbolic constants used by the program
-//-----------------------------------------------------------------------------
-
-
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 128
-#define PADDLE_WIDTH 40
-#define PADDLE_HEIGHT 8
-#define BALL_RADIUS 5
-#define BRICK_WIDTH 29.5
-#define BRICK_HEIGHT 10
-#define BUFFER 47
-
-#define ROW_1 2
-#define ROW_2 14
-#define ROW_3 26
-
-#define COLUMN_1 2
-#define COLUMN_2 34
-#define COLUMN_3 66
-#define COLUMN_4 98
-
-#define NUM_ROWS 4
-#define NUM_COLS 4
-#define BRICK_SPACING_X 2
-#define BRICK_SPACING_Y 2
-#define BRICK_START_X 2
-#define BRICK_START_Y 2
-
-#define HIGH_COLOR_TONE 100
-#define MID_COLOR_TONE 50
-#define LOW_COLOR_TONE 5
-#define NO_COLOR_TONE 0
-
-//-----------------------------------------------------------------------------
-// Define global variables and structures here.
-// NOTE: when possible avoid using global variables
-//-----------------------------------------------------------------------------
 
 int main(void) {
   // Initialize 
@@ -161,7 +159,6 @@ int main(void) {
 
   // RGBS
   init_booster_leds();
-  enable_rgb_timers();
 
   // Buzzer
   motor0_init();
@@ -170,25 +167,28 @@ int main(void) {
   ST7735S_init();
   ST7735S_clear_lcd(WHITE);
 
+  // Initialize the state of the game
   GameState game = {
       .paddle = {
-          .x_pos = 40,
+          .x_pos = PADDLE_SPAWN_X,
           .y_pos = PADDLE_SPAWN_Y,
           .width = PADDLE_WIDTH,
           .height = PADDLE_HEIGHT,
-          .x_old = -1,
+          .x_old = PADDLE_OLD_X,
           .first_draw_done = false
       },
       .ball = {
           .x = BALL_SPAWN_X,
           .y = BALL_SPAWN_Y,
-          .x_old = 0,
-          .y_old = 0,
-          .vel_x = 0.5f,
-          .vel_y = -0.5f,
+          .x_old = BALL_OLD_X,
+          .y_old = BALL_OLD_Y,
+          .vel_x = BALL_VEL_X,
+          .vel_y = BALL_VEL_Y,
           .radius = BALL_RADIUS
       },
-      .lives = 3
+      .lives = LIVES,
+      .game_started = false,
+      .game_paused = true
   };
 
   int8_t brick_index = 0;
@@ -205,32 +205,72 @@ int main(void) {
       brick_index++;
     }
   }
+
   while (1) {
     run_breakout(&game);
   }
 }
 /* main */
 
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    Executes one frame of the Breakout game. This function updates the paddle,
+//    ball, bricks, and LED lives indicator, and enforces a short frame delay
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
 
 void run_breakout(GameState *game)
 {
-  update_paddle(game);
-  update_ball(game);
+  static bool screen_initialized = false;
 
-  // Adds color to bricks
-  color565_t brick_colors[NUM_ROWS] = {RED, ORANGE, BLUE, GREEN};
-  int8_t brick_index = 0;
-  for (int8_t row = 0; row < NUM_ROWS; row++) {
-      for (int8_t col = 0; col < NUM_COLS; col++) {
-          update_bricks(game, brick_index, brick_colors[row]);
-          brick_index++;
-      }
+  handle_pause_menu(game);
+
+  // Draws the first frame before player presses play
+  if (!screen_initialized) {
+      update_paddle(game);
+      update_ball(game);
+      set_bricks(game);
+      update_lives_led(game->lives);
+      screen_initialized = true;
   }
-  update_lives_led(game->lives);
+
+  // Game runs when unpaused
+  if (game->game_started && !game->game_paused) {
+      update_paddle(game);
+      update_ball(game);
+      set_bricks(game);
+      update_lives_led(game->lives);
+  }
 
   msec_delay(8);
 }
 
+
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    Updates the paddle position based on the joystick input and redraws the
+//    paddle onto the LCD when it's position is changed. Speed of the paddle
+//    varies based on how far left or right the joystick is moved. The paddle
+//    movement is constrained to screen boundaries to prevent it from moving
+//    off-screen
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
 
 void update_paddle(GameState *game)
 {
@@ -297,6 +337,24 @@ void update_paddle(GameState *game)
       paddle_ptr->x_old = paddle_ptr->x_pos ;
   }
 }
+
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    Updates the ball position, handles collisions with paddle and screen
+//    boundaries, and redraws the ball on the LCD. Life loss and ball reset 
+//    behavior is also managed within this function when the ball reaches the
+//    the bottom of the screen. When the ball hits the paddle or loses a life
+//    a sound is played on the buzzer.
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
 
 void update_ball(GameState *game)
 {
@@ -372,9 +430,9 @@ void update_ball(GameState *game)
     if (game->lives > 0)
     {
       game->lives--;
+      play_life_lost_sound();
     }
     update_lives_led(game->lives);
-    play_life_lost_sound();
 
     if (game->lives > 0)
     {
@@ -384,11 +442,12 @@ void update_ball(GameState *game)
       ball_ptr->vel_y = -0.5f;
       draw_circle(ball_ptr->x_old, ball_ptr->y_old, radius, WHITE);
     } else {
-      draw_circle(ball_ptr->x_old, ball_ptr->y_old, radius, WHITE);
       ball_ptr->x = -100;
       ball_ptr->y = -100;
       ball_ptr->vel_x = 0;
       ball_ptr->vel_y = 0;  
+      draw_circle(ball_ptr->x_old, ball_ptr->y_old, radius, WHITE);
+      disable_rgb_timers();
     }
   } else {
     // Draw ball at new position
@@ -396,7 +455,26 @@ void update_ball(GameState *game)
   }          
 }
 
-// updates bricks
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    Handles drawing and collision for a single brick. This function draws
+//    the brick once, detects collision between the brick and the ball, updates
+//    the ball's velocity upon impact, and removes the brick when the ball
+//    collides with it. 
+//    
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//    int8_T brick_index - Index of the brick we are accessing
+//    color565_t color - Color of the brick
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
+
 void update_bricks(GameState *game, int8_t brick_index, color565_t color)
 {
   Ball *ball_ptr = &game->ball;
@@ -416,14 +494,14 @@ void update_bricks(GameState *game, int8_t brick_index, color565_t color)
   int8_t brick_height = BRICK_HEIGHT;
 
   // if brick isn't drawn then draw it
+  // Ensures we don't constantly redraw bricks each frame
   if (brick_ptr->alive && !brick_ptr->drawn){
     draw_rectangle(brick_x, brick_y, brick_width, brick_height, color);
     brick_ptr->drawn = true;
   }
 
+  // Collision detection
   if (brick_ptr->alive) {
-
-    // Collision detection
     // top
     bool top_hit = (ball_x + radius >= brick_x) &&
                     (ball_x - radius <= brick_x + brick_width) &&
@@ -465,8 +543,23 @@ void update_bricks(GameState *game, int8_t brick_index, color565_t color)
   }
 }
 
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    Updates the lives of the player based on if the ball hits the bottom
+//    screen and misses collision with the paddle. green indicates 3 lives left,
+//    yellow indicates 2 lives left, and red indicates 1 life left. When the
+//    player loses all lives the LED turns off
+//
+// INPUT PARAMETERS:
+//    none
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
 
-// Updates leds lives
 void update_lives_led(uint8_t lives)
 {
   switch (lives)
@@ -482,11 +575,27 @@ void update_lives_led(uint8_t lives)
       break;
     default:
       rgb_dc(NO_COLOR_TONE, NO_COLOR_TONE, NO_COLOR_TONE);
+      disable_rgb_timers();
       break;      
   }
 }
 
-// Plays on brick hit
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    This function enables the buzzer for a short duration when the player
+//    breaks a brick with the ball. The buzzer plays a low frequency tone 
+//    following a short delay and then turns off.
+//
+// INPUT PARAMETERS:
+//    none
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
+
 void play_brick_hit_sound() {
   motor0_pwm_enable();
   buzzer_tone(3000);
@@ -495,7 +604,22 @@ void play_brick_hit_sound() {
   motor0_pwm_disable();
 }
 
-// Plays on paddle hit
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    This function enables the buzzer for a short duration when the player
+//    hits the ball against the paddle. The buzzer plays a low frequency tone 
+//    following a short delay and then turns off.
+//
+// INPUT PARAMETERS:
+//    none
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
+
 void play_paddle_hit_sound() {
   motor0_pwm_enable();
   buzzer_tone(2500);
@@ -504,11 +628,104 @@ void play_paddle_hit_sound() {
   motor0_pwm_disable();
 }
 
-// Plays on life lost
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    This function enables the buzzer for a short duration when the ball hits
+//    against the bottom wall of the LCD. The buzzer plays a low frequency tone 
+//    following a short delay and then turns off.
+//
+// INPUT PARAMETERS:
+//    none
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// -----------------------------------------------------------------------------
+
 void play_life_lost_sound() {
   motor0_pwm_enable();
   buzzer_tone(1000);
   msec_delay(75);
   buzzer_tone(0);
   motor0_pwm_disable();
+}
+
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    This function set's the color of the bricks when the program first
+//    runs and accesses update_bricks which will check the state of the bricks
+//    and potential collisions with the ball. 
+//    
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// ----------------------------------------------------------------------------
+
+void set_bricks(GameState *game)
+{
+  color565_t brick_colors[NUM_ROWS] = {RED, ORANGE, BLUE, GREEN};
+  int8_t brick_index = 0;
+  for (int8_t row = 0; row < NUM_ROWS; row++) {
+    for (int8_t col = 0; col < NUM_COLS; col++) {
+        update_bricks(game, brick_index, brick_colors[row]);
+        brick_index++;
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    This function handles the pause menu functionality. When the game starts
+//    the game is paused and the LED is off until PB1 is pressed, which starts
+//    the game and turns on the RGB LED. The game can be paused using PB2.
+//    
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// ----------------------------------------------------------------------------
+
+void handle_pause_menu(GameState *game)
+{
+    // pause menu functionality
+    static bool last_pb1_state = false;
+    static bool last_pb2_state = false;
+    static bool rgb_enabled = false;
+
+    bool pb1_now = boost_pb_down(PB_1);
+    bool pb2_now = boost_pb_down(PB_2);
+
+    // Edge detect PB1
+    if (pb2_now && !last_pb2_state) {
+        game->game_started = true;
+        game->game_paused  = false;
+
+        if (!rgb_enabled){
+          enable_rgb_timers();
+          rgb_enabled = true;
+        }
+    }
+
+    // Edge detect PB2
+    if (pb1_now && !last_pb1_state) {
+        if (game->game_started) {
+            game->game_paused = true;
+        }
+    }
+
+    last_pb1_state = pb1_now;
+    last_pb2_state = pb2_now;
 }

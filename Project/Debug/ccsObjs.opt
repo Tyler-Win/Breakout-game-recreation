@@ -1,3 +1,4 @@
+"./BG.o"
 "./LaunchPad.o"
 "./ST7735S.o"
 "./adc.o"
