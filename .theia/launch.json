@@ -135,6 +135,15 @@
                 "name": "Project",
                 "resourceId": "/Project/readme.md"
             }
+        },
+        {
+            "name": "Project (15)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/breakout_game_main.c"
+            }
         }
     ]
 }

@@ -99,9 +99,11 @@ typedef struct{
 } GameState;
 
 void run_breakout(GameState *game);
+bool game_start(bool first);
 void update_paddle(GameState *game);
 void update_ball(GameState *game);
 void update_bricks(GameState *game, int8_t brick_index, color565_t color);
+void set_bricks(GameState *game);
 void update_lives_led(uint8_t lives);
 void play_brick_hit_sound();
 void play_life_lost_sound();
@@ -216,16 +218,7 @@ void run_breakout(GameState *game)
 {
   update_paddle(game);
   update_ball(game);
-
-  // Adds color to bricks
-  color565_t brick_colors[NUM_ROWS] = {RED, ORANGE, BLUE, GREEN};
-  int8_t brick_index = 0;
-  for (int8_t row = 0; row < NUM_ROWS; row++) {
-      for (int8_t col = 0; col < NUM_COLS; col++) {
-          update_bricks(game, brick_index, brick_colors[row]);
-          brick_index++;
-      }
-  }
+  set_bricks(game);
   update_lives_led(game->lives);
 
   msec_delay(8);
@@ -511,4 +504,16 @@ void play_life_lost_sound() {
   msec_delay(75);
   buzzer_tone(0);
   motor0_pwm_disable();
+}
+
+void set_bricks(GameState *game)
+{
+  color565_t brick_colors[NUM_ROWS] = {RED, ORANGE, BLUE, GREEN};
+  int8_t brick_index = 0;
+  for (int8_t row = 0; row < NUM_ROWS; row++) {
+    for (int8_t col = 0; col < NUM_COLS; col++) {
+        update_bricks(game, brick_index, brick_colors[row]);
+        brick_index++;
+    }
+  }
 }
