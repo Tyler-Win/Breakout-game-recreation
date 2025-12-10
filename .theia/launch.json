@@ -144,7 +144,6 @@
                 "name": "Project",
                 "resourceId": "/Project/breakout_game_main.c"
             }
-<<<<<<< HEAD
         },
         {
             "name": "Project (16)",
@@ -154,8 +153,6 @@
                 "name": "Project",
                 "resourceId": "/Project/BG.h"
             }
-=======
->>>>>>> 0a9b6a5926f6ea9355b900f3c01334217ac8a159
         }
     ]
 }
