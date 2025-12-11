@@ -100,8 +100,11 @@
 #define PAUSE_TEXT                                                      "PAUSED"
 #define FIRST_HALF_GAME_START_TEXT                                   "PRESS PB2"
 #define SECOND_HALF_GAME_START_TEXT                                   "TO START"
+#define WIN_TEXT                                                      "YOU WIN!"
 #define PAUSE_X_POS                                                           40
 #define PAUSE_Y_POS                                                           80
+#define WIN_X_POS                                                             30
+#define WIN_Y_POS                                                             70
 #define FIRST_HALF_START_TEXT_X_POS                                           25
 #define FIRST_HALF_START_TEXT_Y_POS                                           60
 #define SECOND_HALF_START_TEXT_X_POS                                          30

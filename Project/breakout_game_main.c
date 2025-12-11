@@ -122,7 +122,7 @@ typedef struct {
 typedef struct{
   Ball ball;
   Paddle paddle;
-  Brick bricks[16];
+  Brick bricks[NUM_ROWS * NUM_COLS];
   int8_t lives;
 
   bool game_started;
@@ -139,6 +139,8 @@ void update_paddle(GameState *game);
 void update_ball(GameState *game);
 void update_bricks(GameState *game, int8_t brick_index, color565_t color);
 void set_bricks(GameState *game);
+bool all_bricks_destroyed(GameState *game);
+void display_win_screen(GameState *game);
 void update_lives_led(uint8_t lives);
 void play_brick_hit_sound();
 void play_life_lost_sound();
@@ -257,6 +259,11 @@ void run_breakout(GameState *game)
       update_ball(game);
       set_bricks(game);
       update_lives_led(game->lives);
+
+      if (all_bricks_destroyed(game)) {
+        display_win_screen(game);
+        game->game_paused = true;
+      }
   }
 
   msec_delay(8);
@@ -663,7 +670,6 @@ void play_life_lost_sound() {
 //    This function set's the color of the bricks when the program first
 //    runs and accesses update_bricks which will check the state of the bricks
 //    and potential collisions with the ball. 
-//    
 //
 // INPUT PARAMETERS:
 //    GameState *game - Pointer to the current game state struct
@@ -692,7 +698,6 @@ void set_bricks(GameState *game)
 //    This function handles the pause menu functionality. When the game starts
 //    the game is paused and the LED is off until PB1 is pressed, which starts
 //    the game and turns on the RGB LED. The game can be paused using PB2.
-//    
 //
 // INPUT PARAMETERS:
 //    GameState *game - Pointer to the current game state struct
@@ -741,4 +746,53 @@ void handle_pause_menu(GameState *game)
     }
     
     last_pb2 = pb2;
+}
+
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    This function checks if all the bricks are destroyed, if so the player
+//    has won the game and the win state is activated
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// ----------------------------------------------------------------------------
+
+bool all_bricks_destroyed(GameState *game){
+  for (int i = 0; i < NUM_ROWS * NUM_COLS;  i++) {
+    if (game->bricks[i].alive) {
+      return false;
+    }
+  }
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+// DESCRIPTION:
+//    This function displays the win screen to the user
+//
+// INPUT PARAMETERS:
+//    GameState *game - Pointer to the current game state struct
+//
+// OUTPUT PARAMETERS:
+//    none
+//
+// RETURN:
+//    none
+// ----------------------------------------------------------------------------
+
+void display_win_screen(GameState *game) {
+  game->ball.x = -100;
+  game->ball.y = -100;
+  game->ball.vel_x = 0;
+  game->ball.vel_y = 0;
+
+  rgb_dc(LOW_COLOR_TONE, LOW_COLOR_TONE, NO_COLOR_TONE);
+
+  write_string(WIN_X_POS, WIN_Y_POS, WIN_TEXT, RED, SPACING);
 }
