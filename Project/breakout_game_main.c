@@ -429,17 +429,15 @@ void update_ball(GameState *game)
   }      
 
   // if the ball's x/y goes outside the left or right walls
-  // then invert vel_x, add to ball_x, and randomize the balls 
-  // y speed
+  // then invert vel_x, and add to ball_x,
   if (ball_ptr->x - radius <= 0 || ball_ptr->x + radius >= SCREEN_WIDTH)
   {
       ball_ptr->vel_x = -ball_ptr->vel_x;
       ball_ptr->x += ball_ptr->vel_x;
   }
 
-  // if the ball's x/y goes outside the top or bottom walls
-  // then invert vel_y, add to ball_y, and randomize the balls 
-  // x speed
+  // if the ball's x/y goes outside the top wall
+  // then invert vel_y, and add to ball_y
   if (ball_ptr->y - radius <= 0)
   {
       ball_ptr->vel_y = -ball_ptr->vel_y;
