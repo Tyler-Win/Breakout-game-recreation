@@ -153,6 +153,15 @@
                 "name": "Project",
                 "resourceId": "/Project/BG.h"
             }
+        },
+        {
+            "name": "Project (17)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project",
+                "resourceId": "/Project/BG.c"
+            }
         }
     ]
 }

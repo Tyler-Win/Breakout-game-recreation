@@ -700,32 +700,26 @@ void set_bricks(GameState *game)
 
 void handle_pause_menu(GameState *game)
 {
-    // pause menu functionality
-    static bool last_pb1_state = false;
-    static bool last_pb2_state = false;
-    static bool rgb_enabled = false;
+    static bool last_pb2 = false;
 
-    bool pb1_now = boost_pb_down(PB_1);
-    bool pb2_now = boost_pb_down(PB_2);
+    bool pb2 = boost_pb_down(PB_2);   // true when currently pressed
 
-    // Edge detect PB1
-    if (pb2_now && !last_pb2_state) {
-        game->game_started = true;
-        game->game_paused  = false;
-
-        if (!rgb_enabled){
-          enable_rgb_timers();
-          rgb_enabled = true;
+    // Detect rising edge (button pressed this frame but not last frame)
+    if (pb2 && !last_pb2)
+    {
+        // Start game when PB2 pressed
+        if (!game->game_started)
+        {
+            game->game_started = true;
+            game->game_paused = false;
+            enable_rgb_timers();
+        }
+        else
+        {
+            // Toggle pause state
+            game->game_paused = !game->game_paused;
         }
     }
 
-    // Edge detect PB2
-    if (pb1_now && !last_pb1_state) {
-        if (game->game_started) {
-            game->game_paused = true;
-        }
-    }
-
-    last_pb1_state = pb1_now;
-    last_pb2_state = pb2_now;
+    last_pb2 = pb2;
 }

@@ -56,8 +56,8 @@
 #define Y_AXIS                                                3
 #define X_AXIS                                                2
 #define PB_JOYSTICK                                           2
-#define PB_2                                                  1
-#define PB_1                                                  0
+#define PB_2                                                  0
+#define PB_1                                                  1
 #define NO_COLOR_TONE                                         0
 
 //-----------------------------------------------------------------------------
