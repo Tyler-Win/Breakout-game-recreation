@@ -212,10 +212,14 @@ int main(void) {
 }
 /* main */
 
+
 //-----------------------------------------------------------------------------
 // DESCRIPTION:
-//    Executes one frame of the Breakout game. This function updates the paddle,
-//    ball, bricks, and LED lives indicator, and enforces a short frame delay
+//    Initializes and updates one frame of the breakout game. The game runs
+//    the first frame so the user can see the game and doesn't start until PB2
+//    is pressed. When the game is unpaused the paddle, ball, bricks, and lives
+//    are continue to update till the game is over. There is a 8 milisecond
+//    delay coded in.
 //
 // INPUT PARAMETERS:
 //    GameState *game - Pointer to the current game state struct
@@ -226,6 +230,7 @@ int main(void) {
 // RETURN:
 //    none
 // -----------------------------------------------------------------------------
+
 
 void run_breakout(GameState *game)
 {
@@ -240,6 +245,10 @@ void run_breakout(GameState *game)
       set_bricks(game);
       update_lives_led(game->lives);
       screen_initialized = true;
+      write_string(FIRST_HALF_START_TEXT_X_POS, FIRST_HALF_START_TEXT_Y_POS, 
+      FIRST_HALF_GAME_START_TEXT, RED, SPACING);
+      write_string(SECOND_HALF_START_TEXT_X_POS, SECOND_HALF_START_TEXT_Y_POS,
+      SECOND_HALF_GAME_START_TEXT, RED, SPACING);
   }
 
   // Game runs when unpaused
@@ -411,7 +420,6 @@ void update_ball(GameState *game)
   {
       ball_ptr->vel_x = -ball_ptr->vel_x;
       ball_ptr->x += ball_ptr->vel_x;
-      ball_ptr->vel_y += ((rand() % 4) - 2) * 0.1;  // slight variation
   }
 
   // if the ball's x/y goes outside the top or bottom walls
@@ -421,7 +429,6 @@ void update_ball(GameState *game)
   {
       ball_ptr->vel_y = -ball_ptr->vel_y;
       ball_ptr->y += ball_ptr->vel_y;
-      ball_ptr->vel_x += ((rand() % 4) - 2) * 0.1;  // slight variation
   }
 
   // Hits floor. Game over
@@ -529,13 +536,11 @@ void update_bricks(GameState *game, int8_t brick_index, color565_t color)
     // If any side is hit then erase the rectangle                  
     if (top_hit || bottom_hit) {
       ball_ptr->vel_y = -ball_ptr->vel_y;
-      ball_ptr->vel_y += ((rand() % 4) - 2) * 0.1;  // slight variation
       brick_ptr->alive = false;
       play_brick_hit_sound();
       draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
     } else if (left_hit || right_hit){
       ball_ptr->vel_x = -ball_ptr->vel_x;
-      ball_ptr->vel_x += ((rand() % 4) - 2) * 0.1;  // slight variation
       brick_ptr->alive = false;
       play_brick_hit_sound();
       draw_rectangle(brick_x, brick_y, brick_width, brick_height, WHITE);
@@ -576,6 +581,7 @@ void update_lives_led(uint8_t lives)
     default:
       rgb_dc(NO_COLOR_TONE, NO_COLOR_TONE, NO_COLOR_TONE);
       disable_rgb_timers();
+      write_full_image();
       break;      
   }
 }
@@ -713,13 +719,26 @@ void handle_pause_menu(GameState *game)
             game->game_started = true;
             game->game_paused = false;
             enable_rgb_timers();
+            
+            write_string(FIRST_HALF_START_TEXT_X_POS, FIRST_HALF_START_TEXT_Y_POS, 
+            FIRST_HALF_GAME_START_TEXT, WHITE, SPACING);
+            
+            write_string(SECOND_HALF_START_TEXT_X_POS, SECOND_HALF_START_TEXT_Y_POS,
+            SECOND_HALF_GAME_START_TEXT, WHITE, SPACING);
         }
         else
         {
             // Toggle pause state
             game->game_paused = !game->game_paused;
+            
+            if (game->game_paused){
+              write_string(PAUSE_X_POS, PAUSE_Y_POS, PAUSE_TEXT, RED, SPACING);
+            } else {
+              write_string(PAUSE_X_POS, PAUSE_Y_POS, PAUSE_TEXT, WHITE, SPACING);              
+            }
+                       
         }
     }
-
+    
     last_pb2 = pb2;
 }

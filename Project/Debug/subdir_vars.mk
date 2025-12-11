@@ -17,6 +17,7 @@ C_SRCS += \
 ../breakout_game_main.c \
 ../clock.c \
 ../gfx.c \
+../image_data.c \
 ../lcd1602.c \
 ../mario.c \
 ../pitches.c \
@@ -34,6 +35,7 @@ C_DEPS += \
 ./breakout_game_main.d \
 ./clock.d \
 ./gfx.d \
+./image_data.d \
 ./lcd1602.d \
 ./mario.d \
 ./pitches.d \
@@ -51,6 +53,7 @@ OBJS += \
 ./breakout_game_main.o \
 ./clock.o \
 ./gfx.o \
+./image_data.o \
 ./lcd1602.o \
 ./mario.o \
 ./pitches.o \
@@ -68,6 +71,7 @@ OBJS__QUOTED += \
 "breakout_game_main.o" \
 "clock.o" \
 "gfx.o" \
+"image_data.o" \
 "lcd1602.o" \
 "mario.o" \
 "pitches.o" \
@@ -85,6 +89,7 @@ C_DEPS__QUOTED += \
 "breakout_game_main.d" \
 "clock.d" \
 "gfx.d" \
+"image_data.d" \
 "lcd1602.d" \
 "mario.d" \
 "pitches.d" \
@@ -102,6 +107,7 @@ C_SRCS__QUOTED += \
 "../breakout_game_main.c" \
 "../clock.c" \
 "../gfx.c" \
+"../image_data.c" \
 "../lcd1602.c" \
 "../mario.c" \
 "../pitches.c" \

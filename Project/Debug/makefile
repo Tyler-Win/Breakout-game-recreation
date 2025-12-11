@@ -18,6 +18,7 @@ ORDERED_OBJS += \
 "./breakout_game_main.o" \
 "./clock.o" \
 "./gfx.o" \
+"./image_data.o" \
 "./lcd1602.o" \
 "./mario.o" \
 "./pitches.o" \
@@ -158,8 +159,8 @@ Project.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "BG.o" "LaunchPad.o" "ST7735S.o" "adc.o" "booster.o" "breakout_game_main.o" "clock.o" "gfx.o" "lcd1602.o" "mario.o" "pitches.o" "potter.o" "smallworld.o" "spi.o" "uart.o" "ticlang\startup_mspm0g3507_ticlang.o" 
-	-$(RM) "BG.d" "LaunchPad.d" "ST7735S.d" "adc.d" "booster.d" "breakout_game_main.d" "clock.d" "gfx.d" "lcd1602.d" "mario.d" "pitches.d" "potter.d" "smallworld.d" "spi.d" "uart.d" "ticlang\startup_mspm0g3507_ticlang.d" 
+	-$(RM) "BG.o" "LaunchPad.o" "ST7735S.o" "adc.o" "booster.o" "breakout_game_main.o" "clock.o" "gfx.o" "image_data.o" "lcd1602.o" "mario.o" "pitches.o" "potter.o" "smallworld.o" "spi.o" "uart.o" "ticlang\startup_mspm0g3507_ticlang.o" 
+	-$(RM) "BG.d" "LaunchPad.d" "ST7735S.d" "adc.d" "booster.d" "breakout_game_main.d" "clock.d" "gfx.d" "image_data.d" "lcd1602.d" "mario.d" "pitches.d" "potter.d" "smallworld.d" "spi.d" "uart.d" "ticlang\startup_mspm0g3507_ticlang.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

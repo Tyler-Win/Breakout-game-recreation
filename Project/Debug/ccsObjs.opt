@@ -6,6 +6,7 @@
 "./breakout_game_main.o"
 "./clock.o"
 "./gfx.o"
+"./image_data.o"
 "./lcd1602.o"
 "./mario.o"
 "./pitches.o"
