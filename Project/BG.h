@@ -43,6 +43,10 @@
 // Loads MSP launchpad board support macros and definitions
 //-----------------------------------------------------------------------------
 
+// Game loop
+#define BUZZER_DELAY                                                          75
+#define PADDLE_BUZZ_DELAY                                                     25
+
 // Joystick values
 #define FAR_RIGHT_JOYSTICK_VALUE                                            2800
 #define RIGHT_JOYSTICK_VALUE                                                2050
@@ -53,6 +57,8 @@
 // LCD screen values
 #define SCREEN_WIDTH                                                         128
 #define SCREEN_HEIGHT                                                        128
+#define OFF_BOUNDS_X                                                        -100
+#define OFF_BOUNDS_Y                                                        -100
 
 // Game functionality values
 #define LIVES                                                                  3
@@ -67,6 +73,7 @@
 #define ONE_WIDTH                                                              1
 #define ONE_PPF                                                                1
 #define TWO_PPF                                                                2
+#define SCALING                                                             0.02
 
 // # Define to set up Ball object
 #define BALL_SPAWN_X                                          (SCREEN_WIDTH / 2)
@@ -110,11 +117,5 @@
 #define SECOND_HALF_START_TEXT_X_POS                                          30
 #define SECOND_HALF_START_TEXT_Y_POS                                          70
 #define SPACING                                                                8
-
-//-----------------------------------------------------------------------------
-// Define function prototypes used by the program
-//-----------------------------------------------------------------------------
-
-
 
 #endif /* __SPI_H__ */

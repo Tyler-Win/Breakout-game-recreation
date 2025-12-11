@@ -78,11 +78,19 @@
 //-----------------------------------------------------------------------------
 // Define symbolic constants used by the program
 //-----------------------------------------------------------------------------
-#define HIGH_COLOR_TONE 100
-#define LOW_COLOR_TONE 5
-#define NO_COLOR_TONE 0
-#define PB_2                                                  1
-#define PB_1                                                  0
+// Brightness of colors
+#define HIGH_COLOR_TONE                                                      100
+#define LOW_COLOR_TONE                                                         5
+#define NO_COLOR_TONE                                                          0
+
+// Buzzer pitch
+#define LIFE_BUZZ_TONE                                                      1000
+#define PADDLE_BUZZ_TONE                                                    2500
+#define BRICK_BUZZ_TONE                                                     3000
+
+// Pushbuttons
+#define PB_2                                                                   1
+#define PB_1                                                                   0
 
 //-----------------------------------------------------------------------------
 // Define global variable and structures here.
@@ -342,11 +350,11 @@ void update_paddle(GameState *game)
       if (paddle_ptr->x_pos > paddle_ptr->x_old) {
           // moving right: erase left, draw right
           draw_rectangle(paddle_ptr->x_old, y_pos, height, width, WHITE);
-          draw_rectangle(paddle_ptr->x_pos  + width - 1, y_pos, 
+          draw_rectangle(paddle_ptr->x_pos  + width - ONE_WIDTH, y_pos, 
                         height, width, RED);
       } else {
           // moving left: erase right, draw left
-          draw_rectangle(paddle_ptr->x_old + width - 1, y_pos, 
+          draw_rectangle(paddle_ptr->x_old + width - ONE_WIDTH, y_pos, 
                         height, width, WHITE);
           draw_rectangle(paddle_ptr->x_pos , y_pos, height, width, RED);
       }
@@ -412,10 +420,10 @@ void update_ball(GameState *game)
     // change vel_x based on where ball hits paddle
     float hit_position = (ball_ptr->x - (paddle_x + PADDLE_WIDTH/2));
 
-    ball_ptr->vel_x += hit_position * 0.02;
+    ball_ptr->vel_x += hit_position * SCALING;
 
     // Ball won't travel into paddle
-    ball_ptr->y = paddle_y - radius - 1;
+    ball_ptr->y = paddle_y - radius - ONE_WIDTH;
 
     play_paddle_hit_sound();
   }      
@@ -452,12 +460,12 @@ void update_ball(GameState *game)
     {
       ball_ptr->x = BALL_SPAWN_X;
       ball_ptr->y = BALL_SPAWN_Y;
-      ball_ptr->vel_x = 0.5f;
-      ball_ptr->vel_y = -0.5f;
+      ball_ptr->vel_x = BALL_VEL_X;
+      ball_ptr->vel_y = BALL_VEL_Y;
       draw_circle(ball_ptr->x_old, ball_ptr->y_old, radius, WHITE);
     } else {
-      ball_ptr->x = -100;
-      ball_ptr->y = -100;
+      ball_ptr->x = OFF_BOUNDS_X;
+      ball_ptr->y = OFF_BOUNDS_Y;
       ball_ptr->vel_x = 0;
       ball_ptr->vel_y = 0;  
       draw_circle(ball_ptr->x_old, ball_ptr->y_old, radius, WHITE);
@@ -611,8 +619,8 @@ void update_lives_led(uint8_t lives)
 
 void play_brick_hit_sound() {
   motor0_pwm_enable();
-  buzzer_tone(3000);
-  msec_delay(75);
+  buzzer_tone(BRICK_BUZZ_TONE);
+  msec_delay(BUZZER_DELAY);
   buzzer_tone(0);
   motor0_pwm_disable();
 }
@@ -635,8 +643,8 @@ void play_brick_hit_sound() {
 
 void play_paddle_hit_sound() {
   motor0_pwm_enable();
-  buzzer_tone(2500);
-  msec_delay(25);
+  buzzer_tone(PADDLE_BUZZ_TONE);
+  msec_delay(PADDLE_BUZZ_DELAY);
   buzzer_tone(0);
   motor0_pwm_disable();
 }
@@ -659,8 +667,8 @@ void play_paddle_hit_sound() {
 
 void play_life_lost_sound() {
   motor0_pwm_enable();
-  buzzer_tone(1000);
-  msec_delay(75);
+  buzzer_tone(LIFE_BUZZ_TONE);
+  msec_delay(BUZZER_DELAY);
   buzzer_tone(0);
   motor0_pwm_disable();
 }
@@ -787,8 +795,8 @@ bool all_bricks_destroyed(GameState *game){
 // ----------------------------------------------------------------------------
 
 void display_win_screen(GameState *game) {
-  game->ball.x = -100;
-  game->ball.y = -100;
+  game->ball.x = OFF_BOUNDS_X;
+  game->ball.y = OFF_BOUNDS_Y;
   game->ball.vel_x = 0;
   game->ball.vel_y = 0;
 
