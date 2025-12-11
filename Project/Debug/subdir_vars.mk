@@ -9,7 +9,6 @@ CMD_SRCS += \
 ../mspm0g3507.cmd 
 
 C_SRCS += \
-../BG.c \
 ../LaunchPad.c \
 ../ST7735S.c \
 ../adc.c \
@@ -27,7 +26,6 @@ C_SRCS += \
 ../uart.c 
 
 C_DEPS += \
-./BG.d \
 ./LaunchPad.d \
 ./ST7735S.d \
 ./adc.d \
@@ -45,7 +43,6 @@ C_DEPS += \
 ./uart.d 
 
 OBJS += \
-./BG.o \
 ./LaunchPad.o \
 ./ST7735S.o \
 ./adc.o \
@@ -63,7 +60,6 @@ OBJS += \
 ./uart.o 
 
 OBJS__QUOTED += \
-"BG.o" \
 "LaunchPad.o" \
 "ST7735S.o" \
 "adc.o" \
@@ -81,7 +77,6 @@ OBJS__QUOTED += \
 "uart.o" 
 
 C_DEPS__QUOTED += \
-"BG.d" \
 "LaunchPad.d" \
 "ST7735S.d" \
 "adc.d" \
@@ -99,7 +94,6 @@ C_DEPS__QUOTED += \
 "uart.d" 
 
 C_SRCS__QUOTED += \
-"../BG.c" \
 "../LaunchPad.c" \
 "../ST7735S.c" \
 "../adc.c" \
