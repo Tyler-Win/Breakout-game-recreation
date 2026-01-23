@@ -5,7 +5,7 @@
   Using the SDK for BOOSTXL-EDUMKII
   </div>
   <div style="position: absolute; top: 20px; right: 50px;">
-  <a href="../Readme.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
+  <a href="../README.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
   </div>  
 </div>
 <br>
@@ -171,4 +171,5 @@ May require alternate jumper settings if used with push buttons
 
 - This SDK provides an extensible foundation for BoosterPack-based development using TI’s **MSPM0G3507** platform.  
 - Future improvements may include: I²C sensor support, interrupt-based button handling, and a full serial debug console.
+
 
