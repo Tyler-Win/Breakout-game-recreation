@@ -1,4 +1,38 @@
 ********************************************************************************
+//                           BREAKOUT GAME RECREATION
+********************************************************************************
+//
+// CSC 202 Final Project by Tyler Huynh and Adnan Heganovic
+//
+// This program serves as a recreation of the popular Atari game breakout
+// designed to run on the LP-MSPM0G3507 LaunchPad with the use of the
+// BOOSTXL-EDUMKII. Utilizes the BOOSTXL-EDUMKII SDK developed by Ryanne 
+// Geiger (More Information located below).
+// 
+// The objective of Breakout is to aim and hit the ball at the bricks
+// located at the top of the screen using your paddle located at the bottom
+// and remove all of them before losing all 3 lives. 
+//
+// This game serves as an extension to Ryanne's project and opens the doors
+// for future game development on the LP-MSPM0G3507 for future projects.
+//
+// Many thanks to Prof Bruce Link, TA's, and fellow students during this project.
+//
+// How to play:
+//      - Press PB1 to start the game. PB2 is to pause the game and PB1 is
+//        to resume progress
+//      - Move the paddle at the bottom of the screen left or right using
+//        the joystick located on the BOOSTXL-EDUMKII SDK
+//      - Aim the ball towards the bricks while also managing to prevent
+//        the ball from hitting the bottom of the screen
+//      - You have 3 lives, represented by the current LED color: Green is for
+//        3, yellow is for 2, and red is for 1
+//      - If you lose all three lives, press the reset on the MSPM0G3507 to
+//        restart the game
+//
+********************************************************************************
+
+********************************************************************************
 //                           SDK BOOSTXL-EDUMKII
 ********************************************************************************
 //
@@ -14,8 +48,6 @@
 // and Prof Bruce Link for the guidance during this project.
 //
 ********************************************************************************
-
-
 
 // Accelerometer
   3-Axis 
