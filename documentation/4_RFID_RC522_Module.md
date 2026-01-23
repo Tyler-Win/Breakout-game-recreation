@@ -5,7 +5,7 @@
   Using the RFID MFRC522 (HW-126) Module with the MSPM0G3507
   </div>
   <div style="position: absolute; top: 20px; right: 50px;">
-  <a href="../Readme.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
+  <a href="../README.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
   </div>  
 </div>
 <br>
@@ -120,4 +120,5 @@ You’ll use the MSPM0’s SPI API to communicate with the MFRC522. C driver cod
 **Bruce Link**  
 Monroe Community College  
 Information & Computer Technologies Department  
+
 📧 [blink@monroecc.edu](mailto:blink@monroecc.edu)
