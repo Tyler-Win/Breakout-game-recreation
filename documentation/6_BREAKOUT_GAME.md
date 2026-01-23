@@ -42,7 +42,7 @@ Originally released May 13th, 1976 for arcade cabinets. Breakout features rows o
 
 This hardware platform provides a compact, affordable way to experiment with embedded system applications.
 
-🔗 [More details on Wikipedia]([https://www.ti.com/tool/BOOSTXL-EDUMKII](https://en.wikipedia.org/wiki/Breakout_(video_game)))
+🔗 [More details on Wikipedia](https://en.wikipedia.org/wiki/Breakout_(video_game))
 
 ---
 
