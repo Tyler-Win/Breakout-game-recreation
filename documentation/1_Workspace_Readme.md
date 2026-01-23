@@ -5,7 +5,7 @@
   CSC202 Workspace Information
   </div>
   <div style="position: absolute; top: 20px; right: 50px;">
-  <a href="../Readme.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
+  <a href="../README.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
   </div>
 </div>
 <br>
@@ -89,3 +89,4 @@ Bruce Link
 Monroe Community College  
 Information & Computer Technologies Department  
 [blink@monroecc.edu](mailto:blink@monroecc.edu)
+
