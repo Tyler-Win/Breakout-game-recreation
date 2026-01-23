@@ -18,6 +18,9 @@
 //
 // Many thanks to Prof Bruce Link, TA's, and fellow students during this project.
 //
+//
+********************************************************************************
+
 // How to play:
 //      - Press PB1 to start the game. PB2 is to pause the game and PB1 is
 //        to resume progress
@@ -29,8 +32,6 @@
 //        3, yellow is for 2, and red is for 1
 //      - If you lose all three lives, press the reset on the MSPM0G3507 to
 //        restart the game
-//
-********************************************************************************
 
 ********************************************************************************
 //                           SDK BOOSTXL-EDUMKII
