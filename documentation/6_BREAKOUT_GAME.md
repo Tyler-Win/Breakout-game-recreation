@@ -12,7 +12,7 @@
 <hr style="border: none; border-bottom: 4px solid #FFF; width: 100%; margin-top: 0;">
 
 
-> Version 1.3  
+> Version 1.0  
 > Date: Fall 2025
 
 ---
