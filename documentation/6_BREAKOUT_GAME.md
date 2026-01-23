@@ -38,6 +38,7 @@ Originally released May 13th, 1976 for arcade cabinets. Breakout features rows o
 - Buzzer makes various noises based on what it hits
 - Player loses a life when ball touches the bottom of the screen.
 - RGB LED signals players remaining lives
+- Win screen displayed when player destroys all bricks
 - Game over screen when player loses all three lives
 
 Implementing this software onto the MSPM0G3507 allows for future student projects to follow in it's lead.
