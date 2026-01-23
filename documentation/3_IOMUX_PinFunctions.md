@@ -5,7 +5,7 @@
   Pin Function Mapping
   </div>
   <div style="position: absolute; top: 20px; right: 50px;">
-  <a href="../Readme.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
+  <a href="../README.md" title="Go back" style="text-decoration: none; font-size: 32px;">↩</a>
   </div>  
 </div>
 <br>
@@ -70,4 +70,5 @@ When using the SDK **enum**, you must account for the fact that the indexing sta
 **Bruce Link**  
 Monroe Community College  
 Information & Computer Technologies Department  
+
 📧 [blink@monroecc.edu](mailto:blink@monroecc.edu)
