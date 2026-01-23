@@ -46,5 +46,4 @@ Here are the main guides and configuration documents included in this workspace:
    *Documentation for interfacing with the TI educational BoosterPack.*
 
 6. **[BREAKOUT Game Main](./documentation/6_BREAKOUT_GAME.md)**
-
    *Documentation for creation of Breakout game recreation.*
