@@ -35,7 +35,7 @@ Originally released May 13th, 1976 for arcade cabinets. Breakout features rows o
 - Ball speeds up and slows down based on where it hit the paddle
 - Paddle moves left and right in response to Joystick
 - PB1 and PB2 allow for pausing and playing
-- Buzzer makes a chime when ball destroys brick 
+- Buzzer makes various noises based on what it hits
 - Player loses a life when ball touches the bottom of the screen.
 - RGB LED signals players remaining lives
 - Game over screen when player loses all three lives
