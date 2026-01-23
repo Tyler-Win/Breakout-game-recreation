@@ -45,5 +45,5 @@ Here are the main guides and configuration documents included in this workspace:
 5. **[BOOSTXL-EDUMKII SDK](./documentation/5_SDK_BOOSTXL_EDUMKII.md)**  
    *Documentation for interfacing with the TI educational BoosterPack.*
 
-6. **[BREAKOUT Game Main](./documentation/6_BREAKOUT_GAME.md)**
+6. **[BREAKOUT Game Main](./documentation/6_BREAKOUT_GAME.md)**<br>
    *Documentation for creation of Breakout game recreation.*
