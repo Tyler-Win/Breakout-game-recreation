@@ -40,7 +40,7 @@ Originally released May 13th, 1976 for arcade cabinets. Breakout features rows o
 - RGB LED signals players remaining lives
 - Game over screen when player loses all three lives
 
-This hardware platform provides a compact, affordable way to experiment with embedded system applications.
+Implementing this software onto the MSPM0G3507 allows for future student projects to follow in it's lead.
 
 🔗 [More details on Wikipedia](https://en.wikipedia.org/wiki/Breakout_(video_game))
 
