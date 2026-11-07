@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------------------------------------
 // DESCRIPTION
-//    This module serves to provide functions that initialize and run a 
+//    This module serves to provide definitions that initialize and run a 
 //    breakout game. This file also contains various #defines that can be 
 //    located in breakout_game_main.c that serve to allow the program to 
 //    function as originally intended.
